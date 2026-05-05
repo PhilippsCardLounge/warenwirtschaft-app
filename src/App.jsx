@@ -1,0 +1,283 @@
+import { useState, useRef } from "react";
+
+import AddItemForm from "./components/AddItemForm";
+import InventoryList from "./components/InventoryList";
+import SearchFilter from "./components/SearchFilter";
+import CSVImport from "./components/CSVImport";
+import CSVRowForm from "./components/CSVRowForm";
+import SalesList from "./components/SalesList";
+import QuickAddCard from "./components/QuickAddCard";
+
+import { useInventory } from "./hooks/useInventory";
+import { useSales } from "./hooks/useSales";
+import { useOpenPurchases } from "./hooks/useOpenPurchases";
+
+import {
+  getImportedPurchases,
+  addImportedPurchase
+} from "./services/importedPurchasesService";
+
+import {
+  exportBackup,
+  importBackup
+} from "./services/backupService";
+
+export default function App() {
+  const {
+    items,
+    createItem,
+    sellItem,
+    editItem,
+    removeItem,
+    setFilters
+  } = useInventory();
+
+  const { sales, reloadSales } = useSales();
+
+  const {
+    purchases,
+    addPurchase,
+    removePurchase
+  } = useOpenPurchases();
+
+  const [lastAction, setLastAction] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
+
+  // 🔥 Auto-Skip Refs
+  const rowRefs = useRef([]);
+
+  function registerRowRef(index, ref) {
+    rowRefs.current[index] = ref;
+  }
+
+  function focusNextRow(index) {
+    const next = rowRefs.current[index + 1];
+    if (next && next.current) {
+      next.current.focus();
+    }
+  }
+
+  // 🔥 CSV IMPORT (mit dauerhaftem Duplikat-Schutz)
+  async function handleCSVData(data) {
+    const importedKeys = await getImportedPurchases();
+
+    for (const entry of data) {
+      const key = `${entry.seller}_${entry.date}_${entry.price}`;
+
+      const alreadyImported = importedKeys.includes(key);
+
+      if (!alreadyImported) {
+        await addPurchase({
+          seller: entry.seller,
+          date: entry.date,
+          price: entry.price
+        });
+
+        await addImportedPurchase(key);
+      } else {
+        console.log("⚠️ Duplikat übersprungen:", entry);
+      }
+    }
+  }
+
+  async function handleSell(item, price) {
+    await sellItem(item, price);
+    await reloadSales();
+  }
+
+  async function handleUndo() {
+    if (!lastAction) return;
+
+    const latestItem = items[items.length - 1];
+
+    if (latestItem) {
+      await removeItem(latestItem.id);
+    }
+
+    setLastAction(null);
+  }
+
+  // 🔥 BACKUP EXPORT
+  async function handleBackup() {
+    const data = await exportBackup();
+
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `backup-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  // 🔥 BACKUP IMPORT (RESTORE)
+  async function handleRestore(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const confirmed = window.confirm(
+      "ACHTUNG: Alle aktuellen Daten werden gelöscht und durch das Backup ersetzt. Fortfahren?"
+    );
+
+    if (!confirmed) return;
+
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    await importBackup(data);
+
+    alert("Backup erfolgreich wiederhergestellt!");
+
+    window.location.reload();
+  }
+
+  // 🔥 ROBUSTE DATUMS-SORTIERUNG
+  function parseDate(dateString) {
+    const parsed = new Date(dateString);
+    if (!isNaN(parsed)) return parsed;
+
+    if (dateString && dateString.includes(".")) {
+      const [day, month, year] = dateString.split(".");
+      return new Date(`${year}-${month}-${day}`);
+    }
+
+    return new Date(0);
+  }
+
+  const sortedPurchases = [...purchases].sort((a, b) => {
+    const dateA = parseDate(a.date);
+    const dateB = parseDate(b.date);
+    return dateB - dateA;
+  });
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Warenwirtschaft</h1>
+
+      {/* 🔷 TABS */}
+      <div style={{ marginBottom: "20px" }}>
+        <button onClick={() => setActiveTab("overview")}>Übersicht</button>
+        <button onClick={() => setActiveTab("csv")} style={{ marginLeft: "5px" }}>
+          Offene Einkäufe
+        </button>
+        <button onClick={() => setActiveTab("inventory")} style={{ marginLeft: "5px" }}>
+          Inventar
+        </button>
+        <button onClick={() => setActiveTab("sales")} style={{ marginLeft: "5px" }}>
+          Verkäufe
+        </button>
+
+        {/* 🔥 Backup Export */}
+        <button onClick={handleBackup} style={{ marginLeft: "10px" }}>
+          Backup exportieren
+        </button>
+
+        {/* 🔥 Backup Import */}
+        <label style={{ marginLeft: "10px" }}>
+          <span
+            style={{
+              background: "#3498db",
+              color: "white",
+              padding: "5px 10px",
+              cursor: "pointer",
+              borderRadius: "4px"
+            }}
+          >
+            Backup importieren
+          </span>
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleRestore}
+            style={{ display: "none" }}
+          />
+        </label>
+      </div>
+
+      {/* 🔁 Undo */}
+      {lastAction && (
+        <div style={{ marginBottom: "10px", background: "#ffeeba", padding: "10px" }}>
+          Letzte Aktion rückgängig machen
+          <button onClick={handleUndo} style={{ marginLeft: "10px" }}>
+            Undo
+          </button>
+        </div>
+      )}
+
+      {/* 🔢 ÜBERSICHT */}
+      {activeTab === "overview" && (
+        <div>
+          <h2>Übersicht</h2>
+          <QuickAddCard onAdd={createItem} />
+        </div>
+      )}
+
+      {/* 📥 OFFENE EINKÄUFE */}
+      {activeTab === "csv" && (
+        <div>
+          <h2>Offene Einkäufe</h2>
+
+          <CSVImport onDataImported={handleCSVData} />
+
+          {purchases.length === 0 && (
+            <div style={{ marginTop: "10px" }}>
+              Keine offenen Einkäufe
+            </div>
+          )}
+
+          {sortedPurchases.map((entry, index) => {
+            const inputRef = { current: null };
+
+            return (
+              <CSVRowForm
+                key={entry.id}
+                entry={entry}
+                inputRef={inputRef}
+                registerRef={() => registerRowRef(index, inputRef)}
+                onCreate={(data) => {
+                  createItem(data);
+                  removePurchase(entry.id);
+
+                  // 🔥 Auto-Skip
+                  setTimeout(() => focusNextRow(index), 0);
+                }}
+                onRemove={() => removePurchase(entry.id)}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {/* 📦 INVENTAR */}
+      {activeTab === "inventory" && (
+        <div>
+          <h2>Inventar</h2>
+
+          <SearchFilter onFilterChange={setFilters} />
+
+          <AddItemForm onAdd={createItem} />
+
+          <InventoryList
+            items={items}
+            onEdit={editItem}
+            onDelete={removeItem}
+            onSell={handleSell}
+          />
+        </div>
+      )}
+
+      {/* 💸 VERKÄUFE */}
+      {activeTab === "sales" && (
+        <div>
+          <SalesList sales={sales} />
+        </div>
+      )}
+    </div>
+  );
+}
