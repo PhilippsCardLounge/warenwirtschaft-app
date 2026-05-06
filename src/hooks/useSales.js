@@ -9,6 +9,10 @@ import {
   deleteSale
 } from "../services/salesService";
 
+import {
+  addItem
+} from "../services/inventoryService";
+
 export function useSales() {
   const [sales, setSales] =
     useState([]);
@@ -38,7 +42,48 @@ export function useSales() {
   }
 
   // 🗑️ Verkauf löschen
+  // 🔥 Karte zurück ins Inventar
   async function removeSale(id) {
+    const sale = sales.find(
+      (s) => s.id === id
+    );
+
+    if (!sale) return;
+
+    // 🔥 Karte zurücklegen
+    await addItem({
+      inventoryNumber:
+        sale.inventoryNumber,
+
+      name: sale.name,
+
+      type:
+        sale.type ||
+        "Einzelkarte",
+
+      condition:
+        sale.condition ||
+        "NM",
+
+      language:
+        sale.language ||
+        "DE",
+
+      storageType:
+        sale.storageType ||
+        "weiß",
+
+      purchasePrice:
+        sale.purchasePrice || 0,
+
+      purchaseSeller:
+        sale.purchaseSeller ||
+        "Altbestand",
+
+      price: 0
+    });
+
+    // 🔥 Verkauf löschen
     await deleteSale(id);
 
     await loadSales();

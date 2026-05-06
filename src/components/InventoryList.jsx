@@ -17,7 +17,14 @@ export default function InventoryList({
 
   function startEdit(item) {
     setEditingId(item.id);
-    setEditData(item);
+
+    setEditData({
+      ...item,
+
+      purchaseSeller:
+        item.purchaseSeller ||
+        "Altbestand"
+    });
   }
 
   function handleSave() {
@@ -52,7 +59,6 @@ export default function InventoryList({
     setEditingId(null);
   }
 
- 
   return (
     <div>
       {items.map((item) => (
@@ -69,6 +75,7 @@ export default function InventoryList({
             <>
               {/* 🔥 Inventar-Nummer */}
               Inventar-Nummer:
+
               <input
                 value={
                   editData.inventoryNumber ||
@@ -91,6 +98,8 @@ export default function InventoryList({
               <br />
 
               {/* 🔥 Name */}
+              Name:
+
               <input
                 value={
                   editData.name || ""
@@ -102,26 +111,193 @@ export default function InventoryList({
                       e.target.value
                   })
                 }
+                style={{
+                  marginLeft: "5px"
+                }}
               />
 
-              {/* 🔥 Verkaufspreis */}
+              <br />
+              <br />
+
+              {/* 🔥 Einkaufspreis */}
+              Einkaufspreis:
+
               <input
                 type="number"
-                placeholder="Verkaufspreis"
                 value={
-                  editData.price ??
+                  editData.purchasePrice ??
                   ""
                 }
                 onChange={(e) =>
                   setEditData({
                     ...editData,
-                    price:
+                    purchasePrice:
                       parseFloat(
                         e.target.value
                       ) || 0
                   })
                 }
+                style={{
+                  marginLeft: "5px"
+                }}
               />
+
+              <br />
+              <br />
+
+              {/* 🔥 Zustand */}
+              Zustand:
+
+              <select
+                value={
+                  editData.condition ||
+                  "NM"
+                }
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    condition:
+                      e.target.value
+                  })
+                }
+                style={{
+                  marginLeft: "5px"
+                }}
+              >
+                <option>NM</option>
+                <option>EX</option>
+                <option>GD</option>
+                <option>LP</option>
+                <option>PL</option>
+                <option>PO</option>
+              </select>
+
+              <br />
+              <br />
+
+              {/* 🔥 Sprache */}
+              Sprache:
+
+              <select
+                value={
+                  editData.language ||
+                  "DE"
+                }
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    language:
+                      e.target.value
+                  })
+                }
+                style={{
+                  marginLeft: "5px"
+                }}
+              >
+                <option>DE</option>
+                <option>EN</option>
+                <option>JP</option>
+                <option>KOR</option>
+                <option>CHI</option>
+                <option>ITA</option>
+                <option>FRA</option>
+              </select>
+
+              <br />
+              <br />
+
+              {/* 🔥 Typ */}
+              Art:
+
+              <select
+                value={
+                  editData.type ||
+                  "Einzelkarte"
+                }
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    type:
+                      e.target.value
+                  })
+                }
+                style={{
+                  marginLeft: "5px"
+                }}
+              >
+                <option>
+                  Einzelkarte
+                </option>
+
+                <option>
+                  Slab
+                </option>
+
+                <option>
+                  Sealed Promos
+                </option>
+
+                <option>
+                  Booster/Box
+                </option>
+
+                <option>
+                  Merch
+                </option>
+              </select>
+
+              <br />
+              <br />
+
+              {/* 🔥 Lager */}
+              Lager:
+
+              <select
+                value={
+                  editData.storageType ||
+                  "weiß"
+                }
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    storageType:
+                      e.target.value
+                  })
+                }
+                style={{
+                  marginLeft: "5px"
+                }}
+              >
+                <option>weiß</option>
+                <option>grau</option>
+              </select>
+
+              <br />
+              <br />
+
+              {/* 🔥 Herkunft */}
+              Herkunft / Verkäufer:
+
+              <input
+                value={
+                  editData.purchaseSeller ||
+                  ""
+                }
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    purchaseSeller:
+                      e.target.value
+                  })
+                }
+                style={{
+                  marginLeft: "5px",
+                  width: "250px"
+                }}
+              />
+
+              <br />
+              <br />
 
               <button
                 onClick={
@@ -137,6 +313,9 @@ export default function InventoryList({
                     null
                   )
                 }
+                style={{
+                  marginLeft: "5px"
+                }}
               >
                 Abbrechen
               </button>
@@ -172,6 +351,13 @@ export default function InventoryList({
 
               <br />
 
+              {/* 🔥 Herkunft */}
+              Herkunft:{" "}
+              {item.purchaseSeller ||
+                "Altbestand"}
+
+              <br />
+
               {/* 💰 Einkaufspreis */}
               Einkaufspreis:{" "}
               {item.purchasePrice !==
@@ -185,7 +371,6 @@ export default function InventoryList({
 
               <br />
 
-            
               {/* 🔥 Verkaufen */}
               <input
                 type="number"
@@ -215,13 +400,12 @@ export default function InventoryList({
                         saleInputs[
                           item.id
                         ] || 0,
-                      
-                        platform:
-                          "Cardmarket",
-                        
-                        feePercent: 5
+
+                      platform:
+                        "Cardmarket",
+
+                      feePercent: 5
                     }
-                    
                   )
                 }
               >
@@ -243,6 +427,9 @@ export default function InventoryList({
                 onClick={() =>
                   onDelete(item.id)
                 }
+                style={{
+                  marginLeft: "5px"
+                }}
               >
                 Löschen
               </button>
