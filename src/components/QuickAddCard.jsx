@@ -29,6 +29,12 @@ export default function QuickAddCard({
   const [storageType, setStorageType] =
     useState("weiß");
 
+  // 🔥 Herkunft
+  const [
+    purchaseSeller,
+    setPurchaseSeller
+  ] = useState("Altbestand");
+
   // 🔥 Inventar-Nummer
   const [
     inventoryNumber,
@@ -77,19 +83,28 @@ export default function QuickAddCard({
 
     onAdd({
       name,
+
       price: 0,
+
       purchasePrice:
         parseFloat(price) || 0,
+
       condition,
+
       language,
+
       type,
+
       storageType,
+
+      purchaseSeller,
 
       // 🔥 WICHTIG
       inventoryNumber
     });
 
     setName("");
+
     setPrice("");
 
     // 🔥 neue Nummer laden
@@ -102,6 +117,7 @@ export default function QuickAddCard({
   function handleKeyDown(e) {
     if (e.key === "Enter") {
       e.preventDefault();
+
       handleSubmit();
     }
   }
@@ -111,7 +127,9 @@ export default function QuickAddCard({
       style={{
         border:
           "1px solid #ccc",
+
         padding: "15px",
+
         marginTop: "10px"
       }}
     >
@@ -152,6 +170,7 @@ export default function QuickAddCard({
         }}
       >
         Zustand:
+
         <select
           value={condition}
           onChange={(e) =>
@@ -169,6 +188,7 @@ export default function QuickAddCard({
         </select>
 
         Sprache:
+
         <select
           value={language}
           onChange={(e) =>
@@ -187,6 +207,7 @@ export default function QuickAddCard({
         </select>
 
         Art:
+
         <select
           value={type}
           onChange={(e) =>
@@ -217,6 +238,7 @@ export default function QuickAddCard({
         </select>
 
         Lager:
+
         <select
           value={storageType}
           onChange={(e) =>
@@ -228,6 +250,31 @@ export default function QuickAddCard({
           <option>weiß</option>
           <option>grau</option>
         </select>
+      </div>
+
+      {/* 🔥 Herkunft */}
+      <div
+        style={{
+          marginTop: "10px"
+        }}
+      >
+        Herkunft / Verkäufer:
+
+        <input
+          value={purchaseSeller}
+          onChange={(e) =>
+            setPurchaseSeller(
+              e.target.value
+            )
+          }
+          onKeyDown={
+            handleKeyDown
+          }
+          style={{
+            marginLeft: "5px",
+            width: "250px"
+          }}
+        />
       </div>
 
       {/* 🔥 Inventar-Nummer */}

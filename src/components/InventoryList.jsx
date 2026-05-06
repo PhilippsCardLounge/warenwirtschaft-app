@@ -392,22 +392,57 @@ export default function InventoryList({
               />
 
               <button
-                onClick={() =>
+                onClick={() => {
+                  const salePrice =
+                    saleInputs[
+                      item.id
+                    ];
+
+                  // 🔥 Kein leerer Verkauf
+                  if (
+                    salePrice ===
+                      undefined ||
+                    salePrice ===
+                      null ||
+                    isNaN(
+                      salePrice
+                    )
+                  ) {
+                    alert(
+                      "Bitte Verkaufspreis eingeben"
+                    );
+
+                    return;
+                  }
+
+                  // 🔥 Warnung nur bei 0 €
+                  if (
+                    salePrice === 0
+                  ) {
+                    const confirmed =
+                      window.confirm(
+                        "Karte wirklich für 0 € verkaufen?"
+                      );
+
+                    if (
+                      !confirmed
+                    ) {
+                      return;
+                    }
+                  }
+
                   onSell(
                     item,
                     {
-                      salePrice:
-                        saleInputs[
-                          item.id
-                        ] || 0,
+                      salePrice,
 
                       platform:
                         "Cardmarket",
 
                       feePercent: 5
                     }
-                  )
-                }
+                  );
+                }}
               >
                 Verkaufen
               </button>

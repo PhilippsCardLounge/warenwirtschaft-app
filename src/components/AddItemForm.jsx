@@ -1,8 +1,11 @@
 import { useState } from "react";
 
 export default function AddItemForm({ onAdd }) {
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [name, setName] =
+    useState("");
+
+  const [price, setPrice] =
+    useState("");
 
   const [condition, setCondition] =
     useState("NM");
@@ -16,24 +19,42 @@ export default function AddItemForm({ onAdd }) {
   const [storageType, setStorageType] =
     useState("weiß");
 
+  // 🔥 Herkunft
+  const [
+    purchaseSeller,
+    setPurchaseSeller
+  ] = useState("Altbestand");
+
   function handleSubmit() {
     if (!name) {
-      alert("Bitte Kartenname eingeben");
+      alert(
+        "Bitte Kartenname eingeben"
+      );
+
       return;
     }
 
     onAdd({
       name,
+
       price: 0,
+
       purchasePrice:
         parseFloat(price) || 0,
+
       condition,
+
       language,
+
       type,
-      storageType
+
+      storageType,
+
+      purchaseSeller
     });
 
     setName("");
+
     setPrice("");
   }
 
@@ -41,19 +62,28 @@ export default function AddItemForm({ onAdd }) {
   function handleKeyDown(e) {
     if (e.key === "Enter") {
       e.preventDefault();
+
       handleSubmit();
     }
   }
 
   return (
-    <div style={{ marginTop: "10px" }}>
+    <div
+      style={{
+        marginTop: "10px"
+      }}
+    >
       <input
         placeholder="Kartenname"
         value={name}
         onChange={(e) =>
-          setName(e.target.value)
+          setName(
+            e.target.value
+          )
         }
-        onKeyDown={handleKeyDown}
+        onKeyDown={
+          handleKeyDown
+        }
       />
 
       <input
@@ -61,63 +91,120 @@ export default function AddItemForm({ onAdd }) {
         placeholder="Einkaufspreis (€)"
         value={price}
         onChange={(e) =>
-          setPrice(e.target.value)
+          setPrice(
+            e.target.value
+          )
         }
-        onKeyDown={handleKeyDown}
+        onKeyDown={
+          handleKeyDown
+        }
       />
 
       <br />
 
       Zustand:
+
       <select
         value={condition}
         onChange={(e) =>
-          setCondition(e.target.value)
+          setCondition(
+            e.target.value
+          )
         }
       >
         <option>NM</option>
         <option>EX</option>
         <option>GD</option>
+        <option>LP</option>
         <option>PL</option>
         <option>PO</option>
       </select>
 
       Sprache:
+
       <select
         value={language}
         onChange={(e) =>
-          setLanguage(e.target.value)
+          setLanguage(
+            e.target.value
+          )
         }
       >
         <option>DE</option>
         <option>EN</option>
         <option>JP</option>
+        <option>KOR</option>
+        <option>CHI</option>
+        <option>ITA</option>
+        <option>FRA</option>
       </select>
 
       Art:
+
       <select
         value={type}
         onChange={(e) =>
-          setType(e.target.value)
+          setType(
+            e.target.value
+          )
         }
       >
-        <option>Einzelkarte</option>
-        <option>Slab</option>
-        <option>Sealed Promos</option>
-        <option>Booster/Box</option>
-        <option>Merch</option>
+        <option>
+          Einzelkarte
+        </option>
+
+        <option>
+          Slab
+        </option>
+
+        <option>
+          Sealed Promos
+        </option>
+
+        <option>
+          Booster/Box
+        </option>
+
+        <option>
+          Merch
+        </option>
       </select>
 
       Lager:
+
       <select
         value={storageType}
         onChange={(e) =>
-          setStorageType(e.target.value)
+          setStorageType(
+            e.target.value
+          )
         }
       >
         <option>weiß</option>
         <option>grau</option>
       </select>
+
+      <br />
+      <br />
+
+      {/* 🔥 Herkunft */}
+      Herkunft / Verkäufer:
+
+      <input
+        value={purchaseSeller}
+        onChange={(e) =>
+          setPurchaseSeller(
+            e.target.value
+          )
+        }
+        onKeyDown={
+          handleKeyDown
+        }
+        style={{
+          marginLeft: "5px",
+          width: "250px"
+        }}
+      />
 
       <br />
       <br />
@@ -128,4 +215,3 @@ export default function AddItemForm({ onAdd }) {
     </div>
   );
 }
-
