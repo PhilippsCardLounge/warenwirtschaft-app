@@ -32,8 +32,12 @@ export default function App() {
     setFilters
   } = useInventory();
 
-  const { sales, reloadSales } =
-    useSales();
+  const {
+    sales,
+    reloadSales,
+    editSale,
+    removeSale
+  } = useSales();
 
   const {
     purchases,
@@ -331,7 +335,6 @@ export default function App() {
                 fontSize: "18px",
                 display: "inline-block"
               }}
-
             >
               Backup exportieren
             </button>
@@ -487,6 +490,8 @@ export default function App() {
         <div>
           <SalesList
             sales={sales}
+            onEdit={editSale}
+            onDelete={removeSale}
           />
         </div>
       )}

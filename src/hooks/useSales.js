@@ -1,11 +1,22 @@
-import { useEffect, useState } from "react";
-import { getSales } from "../services/salesService";
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  getSales,
+  updateSale,
+  deleteSale
+} from "../services/salesService";
 
 export function useSales() {
-  const [sales, setSales] = useState([]);
+  const [sales, setSales] =
+    useState([]);
 
   async function loadSales() {
-    const data = await getSales();
+    const data =
+      await getSales();
+
     setSales(data);
   }
 
@@ -13,8 +24,33 @@ export function useSales() {
     loadSales();
   }, []);
 
+  // ✏️ Verkauf bearbeiten
+  async function editSale(
+    id,
+    updatedData
+  ) {
+    await updateSale(
+      id,
+      updatedData
+    );
+
+    await loadSales();
+  }
+
+  // 🗑️ Verkauf löschen
+  async function removeSale(id) {
+    await deleteSale(id);
+
+    await loadSales();
+  }
+
   return {
     sales,
-    reloadSales: loadSales
+
+    reloadSales: loadSales,
+
+    editSale,
+
+    removeSale
   };
 }
