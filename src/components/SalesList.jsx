@@ -92,35 +92,6 @@ export default function SalesList({
 
           <br />
 
-          {/* 🔥 Gebühren */}
-          Gebühren (
-          {sale.feePercent ||
-            0}
-          %):{" "}
-          {sale.feeAmount !==
-            null &&
-          sale.feeAmount !==
-            undefined
-            ? `${sale.feeAmount.toFixed(
-                2
-              )} €`
-            : "—"}
-
-          <br />
-
-          {/* 🔥 Netto */}
-          Netto-Auszahlung:{" "}
-          {sale.netSale !==
-            null &&
-          sale.netSale !==
-            undefined
-            ? `${sale.netSale.toFixed(
-                2
-              )} €`
-            : "—"}
-
-          <br />
-
           {/* 🔥 Gewinn */}
           Gewinn:{" "}
           {sale.profit !==
@@ -131,16 +102,6 @@ export default function SalesList({
                 2
               )} €`
             : "—"}
-
-          <br />
-
-          {/* 📅 Datum */}
-          Datum:{" "}
-          {sale.date
-            ? new Date(
-                sale.date
-              ).toLocaleString()
-            : "-"}
         </div>
       ))}
     </div>
