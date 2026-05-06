@@ -3,10 +3,18 @@ import { useState } from "react";
 export default function AddItemForm({ onAdd }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [condition, setCondition] = useState("NM");
-  const [language, setLanguage] = useState("DE");
-  const [type, setType] = useState("Einzelkarte"); // 🔥 NEU
-  const [storageType, setStorageType] = useState("weiß"); // 🔥 falls noch nicht vorhanden
+
+  const [condition, setCondition] =
+    useState("NM");
+
+  const [language, setLanguage] =
+    useState("DE");
+
+  const [type, setType] =
+    useState("Einzelkarte");
+
+  const [storageType, setStorageType] =
+    useState("weiß");
 
   function handleSubmit() {
     if (!name) {
@@ -17,11 +25,12 @@ export default function AddItemForm({ onAdd }) {
     onAdd({
       name,
       price: 0,
-      purchasePrice: parseFloat(price) || 0,
+      purchasePrice:
+        parseFloat(price) || 0,
       condition,
       language,
-      type,           // 🔥 WICHTIG
-      storageType     // 🔥 WICHTIG
+      type,
+      storageType
     });
 
     setName("");
@@ -41,22 +50,31 @@ export default function AddItemForm({ onAdd }) {
       <input
         placeholder="Kartenname"
         value={name}
-        onChange={(e) => setName(e.target.value)}
-        onKeyDown={handleKeyDown} // 🔥 NEU
+        onChange={(e) =>
+          setName(e.target.value)
+        }
+        onKeyDown={handleKeyDown}
       />
 
       <input
         type="number"
         placeholder="Einkaufspreis (€)"
         value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        onKeyDown={handleKeyDown} // 🔥 NEU
+        onChange={(e) =>
+          setPrice(e.target.value)
+        }
+        onKeyDown={handleKeyDown}
       />
 
       <br />
 
       Zustand:
-      <select value={condition} onChange={(e) => setCondition(e.target.value)}>
+      <select
+        value={condition}
+        onChange={(e) =>
+          setCondition(e.target.value)
+        }
+      >
         <option>NM</option>
         <option>EX</option>
         <option>GD</option>
@@ -65,14 +83,24 @@ export default function AddItemForm({ onAdd }) {
       </select>
 
       Sprache:
-      <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+      <select
+        value={language}
+        onChange={(e) =>
+          setLanguage(e.target.value)
+        }
+      >
         <option>DE</option>
         <option>EN</option>
         <option>JP</option>
       </select>
 
       Art:
-      <select value={type} onChange={(e) => setType(e.target.value)}>
+      <select
+        value={type}
+        onChange={(e) =>
+          setType(e.target.value)
+        }
+      >
         <option>Einzelkarte</option>
         <option>Slab</option>
         <option>Sealed Promos</option>
@@ -81,14 +109,23 @@ export default function AddItemForm({ onAdd }) {
       </select>
 
       Lager:
-      <select value={storageType} onChange={(e) => setStorageType(e.target.value)}>
+      <select
+        value={storageType}
+        onChange={(e) =>
+          setStorageType(e.target.value)
+        }
+      >
         <option>weiß</option>
         <option>grau</option>
       </select>
 
       <br />
+      <br />
 
-      <button onClick={handleSubmit}>Speichern</button>
+      <button onClick={handleSubmit}>
+        Speichern
+      </button>
     </div>
   );
 }
+

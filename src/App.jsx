@@ -32,7 +32,8 @@ export default function App() {
     setFilters
   } = useInventory();
 
-  const { sales, reloadSales } = useSales();
+  const { sales, reloadSales } =
+    useSales();
 
   const {
     purchases,
@@ -40,8 +41,11 @@ export default function App() {
     removePurchase
   } = useOpenPurchases();
 
-  const [lastAction, setLastAction] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [lastAction, setLastAction] =
+    useState(null);
+
+  const [activeTab, setActiveTab] =
+    useState("overview");
 
   // 🔥 Auto-Skip Refs
   const rowRefs = useRef([]);
@@ -51,20 +55,24 @@ export default function App() {
   }
 
   function focusNextRow(index) {
-    const next = rowRefs.current[index + 1];
+    const next =
+      rowRefs.current[index + 1];
+
     if (next && next.current) {
       next.current.focus();
     }
   }
 
-  // 🔥 CSV IMPORT (mit dauerhaftem Duplikat-Schutz)
+  // 🔥 CSV IMPORT
   async function handleCSVData(data) {
-    const importedKeys = await getImportedPurchases();
+    const importedKeys =
+      await getImportedPurchases();
 
     for (const entry of data) {
       const key = `${entry.seller}_${entry.date}_${entry.price}`;
 
-      const alreadyImported = importedKeys.includes(key);
+      const alreadyImported =
+        importedKeys.includes(key);
 
       if (!alreadyImported) {
         await addPurchase({
@@ -73,25 +81,37 @@ export default function App() {
           price: entry.price
         });
 
-        await addImportedPurchase(key);
+        await addImportedPurchase(
+          key
+        );
       } else {
-        console.log("⚠️ Duplikat übersprungen:", entry);
+        console.log(
+          "⚠️ Duplikat übersprungen:",
+          entry
+        );
       }
     }
   }
 
-  async function handleSell(item, price) {
-    await sellItem(item, price);
+  async function handleSell(
+    item,
+    saleData
+  ) {
+    await sellItem(item, saleData);
+
     await reloadSales();
   }
 
   async function handleUndo() {
     if (!lastAction) return;
 
-    const latestItem = items[items.length - 1];
+    const latestItem =
+      items[items.length - 1];
 
     if (latestItem) {
-      await removeItem(latestItem.id);
+      await removeItem(
+        latestItem.id
+      );
     }
 
     setLastAction(null);
@@ -99,112 +119,186 @@ export default function App() {
 
   // 🔥 BACKUP EXPORT
   async function handleBackup() {
-    const data = await exportBackup();
+    const data =
+      await exportBackup();
 
     const blob = new Blob(
-      [JSON.stringify(data, null, 2)],
-      { type: "application/json" }
+      [
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      ],
+      {
+        type: "application/json"
+      }
     );
 
-    const url = URL.createObjectURL(blob);
+    const url =
+      URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
+    const a =
+      document.createElement("a");
+
     a.href = url;
-    a.download = `backup-${new Date().toISOString().split("T")[0]}.json`;
+
+    a.download = `backup-${
+      new Date()
+        .toISOString()
+        .split("T")[0]
+    }.json`;
+
     a.click();
 
     URL.revokeObjectURL(url);
   }
 
-  // 🔥 BACKUP IMPORT (RESTORE)
-  async function handleRestore(event) {
-    const file = event.target.files[0];
+  // 🔥 BACKUP IMPORT
+  async function handleRestore(
+    event
+  ) {
+    const file =
+      event.target.files[0];
+
     if (!file) return;
 
-    const confirmed = window.confirm(
-      "ACHTUNG: Alle aktuellen Daten werden gelöscht und durch das Backup ersetzt. Fortfahren?"
-    );
+    const confirmed =
+      window.confirm(
+        "ACHTUNG: Alle aktuellen Daten werden gelöscht und durch das Backup ersetzt. Fortfahren?"
+      );
 
     if (!confirmed) return;
 
-    const text = await file.text();
-    const data = JSON.parse(text);
+    const text =
+      await file.text();
+
+    const data =
+      JSON.parse(text);
 
     await importBackup(data);
 
-    alert("Backup erfolgreich wiederhergestellt!");
+    alert(
+      "Backup erfolgreich wiederhergestellt!"
+    );
 
     window.location.reload();
   }
 
-  // 🔥 ROBUSTE DATUMS-SORTIERUNG
+  // 🔥 DATUMS-SORTIERUNG
   function parseDate(dateString) {
-    const parsed = new Date(dateString);
-    if (!isNaN(parsed)) return parsed;
+    const parsed =
+      new Date(dateString);
 
-    if (dateString && dateString.includes(".")) {
-      const [day, month, year] = dateString.split(".");
-      return new Date(`${year}-${month}-${day}`);
+    if (!isNaN(parsed))
+      return parsed;
+
+    if (
+      dateString &&
+      dateString.includes(".")
+    ) {
+      const [
+        day,
+        month,
+        year
+      ] = dateString.split(".");
+
+      return new Date(
+        `${year}-${month}-${day}`
+      );
     }
 
     return new Date(0);
   }
 
-  const sortedPurchases = [...purchases].sort((a, b) => {
+  const sortedPurchases = [
+    ...purchases
+  ].sort((a, b) => {
     const dateA = parseDate(a.date);
+
     const dateB = parseDate(b.date);
+
     return dateB - dateA;
   });
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+      style={{ padding: "20px" }}
+    >
       <h1>Warenwirtschaft</h1>
 
       {/* 🔷 TABS */}
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => setActiveTab("overview")}>Übersicht</button>
-        <button onClick={() => setActiveTab("csv")} style={{ marginLeft: "5px" }}>
+      <div
+        style={{
+          marginBottom: "20px"
+        }}
+      >
+        <button
+          onClick={() =>
+            setActiveTab(
+              "overview"
+            )
+          }
+        >
+          Übersicht
+        </button>
+
+        <button
+          onClick={() =>
+            setActiveTab("csv")
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
           Offene Einkäufe
         </button>
-        <button onClick={() => setActiveTab("inventory")} style={{ marginLeft: "5px" }}>
+
+        <button
+          onClick={() =>
+            setActiveTab(
+              "inventory"
+            )
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
           Inventar
         </button>
-        <button onClick={() => setActiveTab("sales")} style={{ marginLeft: "5px" }}>
+
+        <button
+          onClick={() =>
+            setActiveTab(
+              "sales"
+            )
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
           Verkäufe
         </button>
-
-        {/* 🔥 Backup Export */}
-        <button onClick={handleBackup} style={{ marginLeft: "10px" }}>
-          Backup exportieren
-        </button>
-
-        {/* 🔥 Backup Import */}
-        <label style={{ marginLeft: "10px" }}>
-          <span
-            style={{
-              background: "#3498db",
-              color: "white",
-              padding: "5px 10px",
-              cursor: "pointer",
-              borderRadius: "4px"
-            }}
-          >
-            Backup importieren
-          </span>
-          <input
-            type="file"
-            accept=".json"
-            onChange={handleRestore}
-            style={{ display: "none" }}
-          />
-        </label>
       </div>
 
       {/* 🔁 Undo */}
       {lastAction && (
-        <div style={{ marginBottom: "10px", background: "#ffeeba", padding: "10px" }}>
-          Letzte Aktion rückgängig machen
-          <button onClick={handleUndo} style={{ marginLeft: "10px" }}>
+        <div
+          style={{
+            marginBottom: "10px",
+            background: "#ffeeba",
+            padding: "10px"
+          }}
+        >
+          Letzte Aktion rückgängig
+          machen
+
+          <button
+            onClick={handleUndo}
+            style={{
+              marginLeft: "10px"
+            }}
+          >
             Undo
           </button>
         </div>
@@ -214,59 +308,175 @@ export default function App() {
       {activeTab === "overview" && (
         <div>
           <h2>Übersicht</h2>
-          <QuickAddCard onAdd={createItem} />
+
+          {/* 🔥 Backup Buttons */}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginBottom: "20px"
+            }}
+          >
+            {/* EXPORT */}
+            <button
+              onClick={handleBackup}
+              style={{
+                background: "#3498db",
+                color: "white",
+                borderRadius: "4px",
+                padding: "8px 14px",
+                cursor: "pointer",
+                minWidth: "160px",
+                textAlign: "center",
+                fontSize: "18px",
+                display: "inline-block"
+              }}
+
+            >
+              Backup exportieren
+            </button>
+
+            {/* IMPORT */}
+            <label
+              style={{
+                background:
+                  "#3498db",
+
+                color: "white",
+
+                borderRadius:
+                  "4px",
+
+                padding:
+                  "6px 10px",
+
+                cursor: "pointer",
+
+                minWidth: "160px",
+
+                textAlign:
+                  "center"
+              }}
+            >
+              Backup importieren
+
+              <input
+                type="file"
+                accept=".json"
+                onChange={
+                  handleRestore
+                }
+                style={{
+                  display: "none"
+                }}
+              />
+            </label>
+          </div>
+
+          <QuickAddCard
+            onAdd={createItem}
+          />
         </div>
       )}
 
       {/* 📥 OFFENE EINKÄUFE */}
       {activeTab === "csv" && (
         <div>
-          <h2>Offene Einkäufe</h2>
+          <h2>
+            Offene Einkäufe
+          </h2>
 
-          <CSVImport onDataImported={handleCSVData} />
+          <CSVImport
+            onDataImported={
+              handleCSVData
+            }
+          />
 
-          {purchases.length === 0 && (
-            <div style={{ marginTop: "10px" }}>
-              Keine offenen Einkäufe
+          {purchases.length ===
+            0 && (
+            <div
+              style={{
+                marginTop: "10px"
+              }}
+            >
+              Keine offenen
+              Einkäufe
             </div>
           )}
 
-          {sortedPurchases.map((entry, index) => {
-            const inputRef = { current: null };
+          {sortedPurchases.map(
+            (entry, index) => {
+              const inputRef = {
+                current: null
+              };
 
-            return (
-              <CSVRowForm
-                key={entry.id}
-                entry={entry}
-                inputRef={inputRef}
-                registerRef={() => registerRowRef(index, inputRef)}
-                onCreate={(data) => {
-                  createItem(data);
-                  removePurchase(entry.id);
+              return (
+                <CSVRowForm
+                  key={entry.id}
+                  entry={entry}
+                  inputRef={
+                    inputRef
+                  }
+                  registerRef={() =>
+                    registerRowRef(
+                      index,
+                      inputRef
+                    )
+                  }
+                  onCreate={(
+                    data
+                  ) => {
+                    createItem(
+                      data
+                    );
 
-                  // 🔥 Auto-Skip
-                  setTimeout(() => focusNextRow(index), 0);
-                }}
-                onRemove={() => removePurchase(entry.id)}
-              />
-            );
-          })}
+                    removePurchase(
+                      entry.id
+                    );
+
+                    // 🔥 Auto-Skip
+                    setTimeout(
+                      () =>
+                        focusNextRow(
+                          index
+                        ),
+                      0
+                    );
+                  }}
+                  onRemove={() =>
+                    removePurchase(
+                      entry.id
+                    )
+                  }
+                />
+              );
+            }
+          )}
         </div>
       )}
 
       {/* 📦 INVENTAR */}
-      {activeTab === "inventory" && (
+      {activeTab ===
+        "inventory" && (
         <div>
           <h2>Inventar</h2>
 
-          <SearchFilter onFilterChange={setFilters} />
+          <SearchFilter
+            onFilterChange={
+              setFilters
+            }
+          />
 
-          <AddItemForm onAdd={createItem} />
+          <AddItemForm
+            onAdd={createItem}
+          />
 
           <InventoryList
             items={items}
             onEdit={editItem}
-            onDelete={removeItem}
+            onDelete={
+              removeItem
+            }
             onSell={handleSell}
           />
         </div>
@@ -275,7 +485,9 @@ export default function App() {
       {/* 💸 VERKÄUFE */}
       {activeTab === "sales" && (
         <div>
-          <SalesList sales={sales} />
+          <SalesList
+            sales={sales}
+          />
         </div>
       )}
     </div>

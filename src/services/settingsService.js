@@ -12,7 +12,7 @@ const TYPE_KEYS = {
   "Merch": "merch"
 };
 
-// 🆕 Default-Werte (wird einmal erstellt)
+// 🆕 Default-Werte
 const DEFAULT_SETTINGS = {
   single: 1,
   slab: 1,
@@ -33,11 +33,10 @@ export async function getInventorySettings() {
   return snap.data();
 }
 
-// 🔢 Nummer generieren (FORMAT!)
+// 🔢 Nummer generieren
 export function generateInventoryNumber(type, settings) {
   const key = TYPE_KEYS[type];
 
-  // ❗ Absicherung gegen falsche Typen / fehlende Settings
   if (!key || settings[key] === undefined) {
     console.error("❌ Ungültiger Typ oder Settings:", type, settings);
     return "ERROR";
@@ -56,13 +55,26 @@ export function generateInventoryNumber(type, settings) {
   if (type === "Booster/Box") return `B${current}`;
   if (type === "Merch") return `M${current}`;
 
-  // ❗ Fallback (sollte nie passieren)
-  console.error("❌ Fallback erreicht:", type);
   return "ERROR";
 }
 
+// 🔢 Nummernwert extrahieren
+export function extractInventoryNumberValue(number) {
+  if (!number) return 0;
+
+  const cleaned = number
+    .toString()
+    .replace(/[^0-9]/g, "");
+
+  return parseInt(cleaned, 10) || 0;
+}
+
 // ➕ Counter erhöhen
-export async function incrementInventoryNumber(type, settings) {
+export async function incrementInventoryNumber(
+  type,
+  settings,
+  inventoryNumber
+) {
   const key = TYPE_KEYS[type];
 
   if (!key || settings[key] === undefined) {
@@ -70,14 +82,21 @@ export async function incrementInventoryNumber(type, settings) {
     return settings;
   }
 
-  const newValue = settings[key] + 1;
+  const usedValue =
+    extractInventoryNumberValue(inventoryNumber);
+
+  const nextValue = Math.max(
+    settings[key],
+    usedValue + 1
+  );
 
   await updateDoc(SETTINGS_DOC, {
-    [key]: newValue
+    [key]: nextValue
   });
 
   return {
     ...settings,
-    [key]: newValue
+    [key]: nextValue
   };
 }
+
