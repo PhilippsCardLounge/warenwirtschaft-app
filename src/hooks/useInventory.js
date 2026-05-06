@@ -8,7 +8,8 @@ import {
 } from "../services/inventoryService";
 
 import {
-  addSale
+  addSale,
+  getSales
 } from "../services/salesService";
 
 import {
@@ -71,8 +72,11 @@ export function useInventory() {
         settings
       );
 
-    // 🔥 DUPLIKAT-SCHUTZ
-    const alreadyExists =
+    // 🔥 Verkäufe zusätzlich laden
+    const sales = await getSales();
+
+    // 🔥 Inventar prüfen
+    const inventoryExists =
       items.some(
         (item) =>
           (
@@ -88,7 +92,28 @@ export function useInventory() {
             .toLowerCase()
       );
 
-    if (alreadyExists) {
+    // 🔥 Verkäufe prüfen
+    const salesExists =
+      sales.some(
+        (sale) =>
+          (
+            sale.inventoryNumber ||
+            ""
+          )
+            .toString()
+            .trim()
+            .toLowerCase() ===
+          inventoryNumber
+            .toString()
+            .trim()
+            .toLowerCase()
+      );
+
+    // 🔥 GLOBALER DUPLIKAT-SCHUTZ
+    if (
+      inventoryExists ||
+      salesExists
+    ) {
       alert(
         `Inventar-Nummer ${inventoryNumber} existiert bereits!`
       );

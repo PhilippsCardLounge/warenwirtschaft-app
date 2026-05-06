@@ -163,6 +163,7 @@ export default function QuickAddCard({
           <option>NM</option>
           <option>EX</option>
           <option>GD</option>
+          <option>LP</option>
           <option>PL</option>
           <option>PO</option>
         </select>
@@ -179,6 +180,10 @@ export default function QuickAddCard({
           <option>DE</option>
           <option>EN</option>
           <option>JP</option>
+          <option>KOR</option>
+          <option>CHI</option>
+          <option>ITA</option>
+          <option>FRA</option>
         </select>
 
         Art:
