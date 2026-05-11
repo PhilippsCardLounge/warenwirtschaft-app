@@ -426,25 +426,24 @@ export default function App() {
                       inputRef
                     )
                   }
-                  onCreate={(
-                    data
-                  ) => {
-                    createItem(
-                      data
-                    );
+                  onCreate={async (data) => {
+                    const success =
+                      await createItem(data);
 
-                    removePurchase(
-                      entry.id
-                    );
-
-                    // 🔥 Auto-Skip
-                    setTimeout(
-                      () =>
-                        focusNextRow(
-                          index
-                        ),
-                      0
-                    );
+                    // 🔥 Nur löschen wenn Karte erfolgreich erstellt
+                    if (success) {
+                      await removePurchase(
+                        entry.id
+                      );
+                      // 🔥 Auto-Skip
+                      setTimeout(
+                        () =>
+                          focusNextRow(
+                            index
+                          ),
+                        0
+                      );
+                    }
                   }}
                   onRemove={() =>
                     removePurchase(

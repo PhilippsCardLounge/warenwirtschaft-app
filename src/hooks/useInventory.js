@@ -61,7 +61,7 @@ export function useInventory() {
         "Settings noch nicht geladen"
       );
 
-      return;
+      return false;
     }
 
     // 🔥 Manuelle Nummer erlauben
@@ -118,7 +118,7 @@ export function useInventory() {
         `Inventar-Nummer ${inventoryNumber} existiert bereits!`
       );
 
-      return;
+      return false;
     }
 
     const newItem = {
@@ -139,6 +139,9 @@ export function useInventory() {
     setSettings(updatedSettings);
 
     await loadItems();
+
+    // 🔥 Erfolg zurückgeben
+    return true;
   }
 
   // ✏️ Bearbeiten
@@ -208,6 +211,9 @@ export function useInventory() {
 
       storageType:
         item.storageType || "",
+
+      purchaseSeller:
+        item.purchaseSeller || "",
 
       purchasePrice,
 
