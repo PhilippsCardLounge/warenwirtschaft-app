@@ -23,6 +23,26 @@ import {
 } from "./services/backupService";
 
 export default function App() {
+  // 🔒 Passwortschutz
+  const [passwordInput, setPasswordInput] =
+    useState("");
+
+  const [isAuthenticated, setIsAuthenticated] =
+    useState(false);
+
+  const appPassword =
+    import.meta.env.VITE_APP_PASSWORD;
+
+  function handleLogin() {
+    if (
+      passwordInput === appPassword
+    ) {
+      setIsAuthenticated(true);
+    } else {
+      alert("Falsches Passwort");
+    }
+  }
+
   const {
     items,
     createItem,
@@ -224,6 +244,59 @@ export default function App() {
 
     return dateB - dateA;
   });
+
+  // 🔒 LOGIN SCREEN
+  if (!isAuthenticated) {
+    return (
+      <div
+        style={{
+          padding: "40px",
+          textAlign: "center"
+        }}
+      >
+        <h1>Warenwirtschaft</h1>
+
+        <h2>
+          Passwort eingeben
+        </h2>
+
+        <input
+          type="password"
+          value={passwordInput}
+          onChange={(e) =>
+            setPasswordInput(
+              e.target.value
+            )
+          }
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleLogin();
+            }
+          }}
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            width: "250px"
+          }}
+        />
+
+        <br />
+        <br />
+
+        <button
+          onClick={handleLogin}
+          style={{
+            padding:
+              "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer"
+          }}
+        >
+          Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -435,6 +508,7 @@ export default function App() {
                       await removePurchase(
                         entry.id
                       );
+
                       // 🔥 Auto-Skip
                       setTimeout(
                         () =>
