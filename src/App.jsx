@@ -543,10 +543,6 @@ export default function App() {
             }
           />
 
-          <AddItemForm
-            onAdd={createItem}
-          />
-
           <InventoryList
             items={items}
             onEdit={editItem}
