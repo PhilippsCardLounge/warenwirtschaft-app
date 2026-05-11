@@ -77,7 +77,8 @@ export default function InventoryList({
             boxShadow:
               "0 2px 10px rgba(0,0,0,0.08)",
             border:
-              "1px solid #e5e7eb"
+              "1px solid #e5e7eb",
+            textAlign: "center"
           }}
         >
           {/* EDIT MODE */}
@@ -324,7 +325,9 @@ export default function InventoryList({
               <div
                 style={{
                   display: "flex",
-                  gap: "10px"
+                  gap: "10px",
+                  justifyContent:
+                    "center"
                 }}
               >
                 <button
@@ -444,6 +447,8 @@ export default function InventoryList({
                   display: "flex",
                   gap: "10px",
                   flexWrap: "wrap",
+                  justifyContent:
+                    "center",
                   marginBottom: "14px"
                 }}
               >
@@ -482,6 +487,7 @@ export default function InventoryList({
                         item.id
                       ];
 
+                    // 🔥 Kein leerer Verkauf
                     if (
                       salePrice ===
                         undefined ||
@@ -498,9 +504,9 @@ export default function InventoryList({
                       return;
                     }
 
+                    // 🔥 Warnung nur bei 0 €
                     if (
-                      salePrice ===
-                      0
+                      salePrice === 0
                     ) {
                       const confirmed =
                         window.confirm(
@@ -546,7 +552,9 @@ export default function InventoryList({
               <div
                 style={{
                   display: "flex",
-                  gap: "10px"
+                  gap: "10px",
+                  justifyContent:
+                    "center"
                 }}
               >
                 <button
