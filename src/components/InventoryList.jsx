@@ -60,270 +60,324 @@ export default function InventoryList({
   }
 
   return (
-    <div>
+    <div
+      style={{
+        maxWidth: "900px",
+        margin: "0 auto"
+      }}
+    >
       {items.map((item) => (
         <div
           key={item.id}
           style={{
-            borderBottom:
-              "1px solid #ccc",
-            padding: "8px"
+            background: "white",
+            borderRadius: "14px",
+            padding: "18px",
+            marginBottom: "18px",
+            boxShadow:
+              "0 2px 10px rgba(0,0,0,0.08)",
+            border:
+              "1px solid #e5e7eb"
           }}
         >
           {/* EDIT MODE */}
           {editingId === item.id ? (
             <>
               {/* 🔥 Inventar-Nummer */}
-              Inventar-Nummer:
-
-              <input
-                value={
-                  editData.inventoryNumber ||
-                  ""
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    inventoryNumber:
-                      e.target.value
-                  })
-                }
+              <div
                 style={{
-                  width: "120px",
-                  marginLeft: "5px"
+                  marginBottom: "12px"
                 }}
-              />
+              >
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Inventar-Nummer
+                </div>
 
-              <br />
-              <br />
+                <input
+                  value={
+                    editData.inventoryNumber ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      inventoryNumber:
+                        e.target.value
+                    })
+                  }
+                  style={{
+                    width: "140px",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                />
+              </div>
 
               {/* 🔥 Name */}
-              Name:
-
-              <input
-                value={
-                  editData.name || ""
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    name:
-                      e.target.value
-                  })
-                }
+              <div
                 style={{
-                  marginLeft: "5px"
+                  marginBottom: "12px"
                 }}
-              />
+              >
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Name
+                </div>
 
-              <br />
-              <br />
+                <input
+                  value={
+                    editData.name || ""
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      name:
+                        e.target.value
+                    })
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                />
+              </div>
 
               {/* 🔥 Einkaufspreis */}
-              Einkaufspreis:
-
-              <input
-                type="number"
-                value={
-                  editData.purchasePrice ??
-                  ""
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    purchasePrice:
-                      parseFloat(
-                        e.target.value
-                      ) || 0
-                  })
-                }
+              <div
                 style={{
-                  marginLeft: "5px"
+                  marginBottom: "12px"
                 }}
-              />
+              >
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Einkaufspreis
+                </div>
 
-              <br />
-              <br />
+                <input
+                  type="number"
+                  value={
+                    editData.purchasePrice ??
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      purchasePrice:
+                        parseFloat(
+                          e.target.value
+                        ) || 0
+                    })
+                  }
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                />
+              </div>
 
               {/* 🔥 Zustand */}
-              Zustand:
-
-              <select
-                value={
-                  editData.condition ||
-                  "NM"
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    condition:
-                      e.target.value
-                  })
-                }
+              <div
                 style={{
-                  marginLeft: "5px"
+                  marginBottom: "12px"
                 }}
               >
-                <option>NM</option>
-                <option>EX</option>
-                <option>GD</option>
-                <option>LP</option>
-                <option>PL</option>
-                <option>PO</option>
-              </select>
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Zustand
+                </div>
 
-              <br />
-              <br />
+                <select
+                  value={
+                    editData.condition ||
+                    "NM"
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      condition:
+                        e.target.value
+                    })
+                  }
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                >
+                  <option>NM</option>
+                  <option>EX</option>
+                  <option>GD</option>
+                  <option>LP</option>
+                  <option>PL</option>
+                  <option>PO</option>
+                </select>
+              </div>
 
               {/* 🔥 Sprache */}
-              Sprache:
-
-              <select
-                value={
-                  editData.language ||
-                  "DE"
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    language:
-                      e.target.value
-                  })
-                }
+              <div
                 style={{
-                  marginLeft: "5px"
+                  marginBottom: "12px"
                 }}
               >
-                <option>DE</option>
-                <option>EN</option>
-                <option>JP</option>
-                <option>KOR</option>
-                <option>CHI</option>
-                <option>ITA</option>
-                <option>FRA</option>
-              </select>
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Sprache
+                </div>
 
-              <br />
-              <br />
-
-              {/* 🔥 Typ */}
-              Art:
-
-              <select
-                value={
-                  editData.type ||
-                  "Einzelkarte"
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    type:
-                      e.target.value
-                  })
-                }
-                style={{
-                  marginLeft: "5px"
-                }}
-              >
-                <option>
-                  Einzelkarte
-                </option>
-
-                <option>
-                  Slab
-                </option>
-
-                <option>
-                  Sealed Promos
-                </option>
-
-                <option>
-                  Booster/Box
-                </option>
-
-                <option>
-                  Merch
-                </option>
-              </select>
-
-              <br />
-              <br />
-
-              {/* 🔥 Lager */}
-              Lager:
-
-              <select
-                value={
-                  editData.storageType ||
-                  "weiß"
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    storageType:
-                      e.target.value
-                  })
-                }
-                style={{
-                  marginLeft: "5px"
-                }}
-              >
-                <option>weiß</option>
-                <option>grau</option>
-              </select>
-
-              <br />
-              <br />
+                <select
+                  value={
+                    editData.language ||
+                    "DE"
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      language:
+                        e.target.value
+                    })
+                  }
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                >
+                  <option>DE</option>
+                  <option>EN</option>
+                  <option>JP</option>
+                  <option>KOR</option>
+                  <option>CHI</option>
+                  <option>ITA</option>
+                  <option>FRA</option>
+                </select>
+              </div>
 
               {/* 🔥 Herkunft */}
-              Herkunft / Verkäufer:
-
-              <input
-                value={
-                  editData.purchaseSeller ||
-                  ""
-                }
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    purchaseSeller:
-                      e.target.value
-                  })
-                }
+              <div
                 style={{
-                  marginLeft: "5px",
-                  width: "250px"
-                }}
-              />
-
-              <br />
-              <br />
-
-              <button
-                onClick={
-                  handleSave
-                }
-              >
-                Speichern
-              </button>
-
-              <button
-                onClick={() =>
-                  setEditingId(
-                    null
-                  )
-                }
-                style={{
-                  marginLeft: "5px"
+                  marginBottom: "16px"
                 }}
               >
-                Abbrechen
-              </button>
+                <div
+                  style={{
+                    fontWeight: "600",
+                    marginBottom: "4px"
+                  }}
+                >
+                  Herkunft /
+                  Verkäufer
+                </div>
+
+                <input
+                  value={
+                    editData.purchaseSeller ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      purchaseSeller:
+                        e.target.value
+                    })
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc"
+                  }}
+                />
+              </div>
+
+              {/* BUTTONS */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px"
+                }}
+              >
+                <button
+                  onClick={
+                    handleSave
+                  }
+                  style={{
+                    background:
+                      "#2563eb",
+                    color: "white",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Speichern
+                </button>
+
+                <button
+                  onClick={() =>
+                    setEditingId(
+                      null
+                    )
+                  }
+                  style={{
+                    background:
+                      "#e5e7eb",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Abbrechen
+                </button>
+              </div>
             </>
           ) : (
             <>
               {/* 🔢 Nummer + Name */}
-              <strong>
+              <div
+                style={{
+                  fontSize: "22px",
+                  fontWeight: "700",
+                  marginBottom: "10px",
+                  color: "#111827"
+                }}
+              >
                 {item.inventoryNumber !==
                   null &&
                 item.inventoryNumber !==
@@ -332,142 +386,207 @@ export default function InventoryList({
                   : ""}
 
                 {item.name}
-              </strong>
+              </div>
 
-              <br />
-
-              {/* 🔥 WICHTIGE INFOS */}
-              Zustand:{" "}
-              {item.condition ||
-                "-"}{" "}
-              | Sprache:{" "}
-              {item.language ||
-                "-"}{" "}
-              | Lager:{" "}
-              {item.storageType ||
-                item.storage ||
-                item.lager ||
-                "-"}
-
-              <br />
+              {/* 🔥 Infos */}
+              <div
+                style={{
+                  color: "#4b5563",
+                  marginBottom: "8px"
+                }}
+              >
+                Zustand:{" "}
+                {item.condition ||
+                  "-"}{" "}
+                • Sprache:{" "}
+                {item.language ||
+                  "-"}{" "}
+                • Lager:{" "}
+                {item.storageType ||
+                  item.storage ||
+                  item.lager ||
+                  "-"}
+              </div>
 
               {/* 🔥 Herkunft */}
-              Herkunft:{" "}
-              {item.purchaseSeller ||
-                "Altbestand"}
-
-              <br />
+              <div
+                style={{
+                  marginBottom: "8px",
+                  color: "#4b5563"
+                }}
+              >
+                Herkunft:{" "}
+                {item.purchaseSeller ||
+                  "Altbestand"}
+              </div>
 
               {/* 💰 Einkaufspreis */}
-              Einkaufspreis:{" "}
-              {item.purchasePrice !==
-                null &&
-              item.purchasePrice !==
-                undefined
-                ? `${item.purchasePrice.toFixed(
-                    2
-                  )} €`
-                : "—"}
+              <div
+                style={{
+                  marginBottom: "14px",
+                  fontWeight: "600"
+                }}
+              >
+                Einkaufspreis:{" "}
+                {item.purchasePrice !==
+                  null &&
+                item.purchasePrice !==
+                  undefined
+                  ? `${item.purchasePrice.toFixed(
+                      2
+                    )} €`
+                  : "—"}
+              </div>
 
-              <br />
-
-              {/* 🔥 Verkaufen */}
-              <input
-                type="number"
-                placeholder="Verkaufspreis eingeben"
-                value={
-                  saleInputs[
-                    item.id
-                  ] || ""
-                }
-                onChange={(e) =>
-                  setSaleInputs({
-                    ...saleInputs,
-                    [item.id]:
-                      parseFloat(
-                        e.target.value
-                      )
-                  })
-                }
-              />
-
-              <button
-                onClick={() => {
-                  const salePrice =
+              {/* 🔥 Verkauf */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                  marginBottom: "14px"
+                }}
+              >
+                <input
+                  type="number"
+                  placeholder="Verkaufspreis"
+                  value={
                     saleInputs[
                       item.id
-                    ];
-
-                  // 🔥 Kein leerer Verkauf
-                  if (
-                    salePrice ===
-                      undefined ||
-                    salePrice ===
-                      null ||
-                    isNaN(
-                      salePrice
-                    )
-                  ) {
-                    alert(
-                      "Bitte Verkaufspreis eingeben"
-                    );
-
-                    return;
+                    ] || ""
                   }
+                  onChange={(e) =>
+                    setSaleInputs({
+                      ...saleInputs,
+                      [item.id]:
+                        parseFloat(
+                          e.target.value
+                        )
+                    })
+                  }
+                  style={{
+                    padding: "10px",
+                    borderRadius:
+                      "8px",
+                    border:
+                      "1px solid #ccc",
+                    minWidth:
+                      "180px"
+                  }}
+                />
 
-                  // 🔥 Warnung nur bei 0 €
-                  if (
-                    salePrice === 0
-                  ) {
-                    const confirmed =
-                      window.confirm(
-                        "Karte wirklich für 0 € verkaufen?"
-                      );
+                <button
+                  onClick={() => {
+                    const salePrice =
+                      saleInputs[
+                        item.id
+                      ];
 
                     if (
-                      !confirmed
+                      salePrice ===
+                        undefined ||
+                      salePrice ===
+                        null ||
+                      isNaN(
+                        salePrice
+                      )
                     ) {
+                      alert(
+                        "Bitte Verkaufspreis eingeben"
+                      );
+
                       return;
                     }
-                  }
 
-                  onSell(
-                    item,
-                    {
-                      salePrice,
+                    if (
+                      salePrice ===
+                      0
+                    ) {
+                      const confirmed =
+                        window.confirm(
+                          "Karte wirklich für 0 € verkaufen?"
+                        );
 
-                      platform:
-                        "Cardmarket",
-
-                      feePercent: 5
+                      if (
+                        !confirmed
+                      ) {
+                        return;
+                      }
                     }
-                  );
-                }}
-              >
-                Verkaufen
-              </button>
 
-              <br />
+                    onSell(
+                      item,
+                      {
+                        salePrice,
+
+                        platform:
+                          "Cardmarket",
+
+                        feePercent: 5
+                      }
+                    );
+                  }}
+                  style={{
+                    background:
+                      "#16a34a",
+                    color: "white",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Verkaufen
+                </button>
+              </div>
 
               {/* Aktionen */}
-              <button
-                onClick={() =>
-                  startEdit(item)
-                }
-              >
-                Bearbeiten
-              </button>
-
-              <button
-                onClick={() =>
-                  onDelete(item.id)
-                }
+              <div
                 style={{
-                  marginLeft: "5px"
+                  display: "flex",
+                  gap: "10px"
                 }}
               >
-                Löschen
-              </button>
+                <button
+                  onClick={() =>
+                    startEdit(item)
+                  }
+                  style={{
+                    background:
+                      "#2563eb",
+                    color: "white",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Bearbeiten
+                </button>
+
+                <button
+                  onClick={() =>
+                    onDelete(item.id)
+                  }
+                  style={{
+                    background:
+                      "#dc2626",
+                    color: "white",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Löschen
+                </button>
+              </div>
             </>
           )}
         </div>
