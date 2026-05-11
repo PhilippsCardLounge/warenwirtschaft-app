@@ -252,9 +252,6 @@ export default function SalesList({
               | Sprache:{" "}
               {sale.language ||
                 "-"}{" "}
-              | Plattform:{" "}
-              {sale.platform ||
-                "Cardmarket"}
 
               <br />
 
