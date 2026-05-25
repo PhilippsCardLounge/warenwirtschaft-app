@@ -83,3 +83,37 @@ export async function getAssignmentByInventoryNumber(
     ...docItem.data()
   };
 }
+
+// 🔍 Assignment anhand Nummer + Status finden
+export async function getSoldAssignmentByInventoryNumber(
+  inventoryNumber
+) {
+  const q = query(
+    collection(db, COLLECTION),
+    where(
+      "inventoryNumber",
+      "==",
+      inventoryNumber
+    ),
+    where(
+      "status",
+      "==",
+      "verkauft"
+    )
+  );
+
+  const snapshot =
+    await getDocs(q);
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const docItem =
+    snapshot.docs[0];
+
+  return {
+    id: docItem.id,
+    ...docItem.data()
+  };
+}
