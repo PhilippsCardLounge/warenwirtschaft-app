@@ -13,6 +13,11 @@ import {
   addItem
 } from "../services/inventoryService";
 
+import {
+  getSoldAssignmentByInventoryNumber,
+  updateAssignment
+} from "../services/assignmentService";
+
 export function useSales() {
   const [sales, setSales] =
     useState([]);
@@ -85,6 +90,27 @@ export function useSales() {
 
     // 🔥 Verkauf löschen
     await deleteSale(id);
+
+    // 🔥 Passendes verkauftes Assignment finden
+    const assignment =
+      await getSoldAssignmentByInventoryNumber(
+        sale.inventoryNumber
+      );
+
+    // 🔥 Assignment zurücksetzen
+    if (assignment) {
+      await updateAssignment(
+        assignment.id,
+        {
+          status:
+            "im Inventar",
+
+          saleDate: null,
+
+          salePrice: null
+        }
+      );
+    }
 
     await loadSales();
   }
