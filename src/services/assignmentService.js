@@ -53,4 +53,33 @@ export async function updateAssignment(
     ref,
     updatedData
   );
+  
+// 🔍 Assignment anhand Inventar-Nummer finden
+export async function getAssignmentByInventoryNumber(
+  inventoryNumber
+) {
+  const q = query(
+    collection(db, COLLECTION),
+    where(
+      "inventoryNumber",
+      "==",
+      inventoryNumber
+    )
+  );
+
+  const snapshot =
+    await getDocs(q);
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const docItem =
+    snapshot.docs[0];
+
+  return {
+    id: docItem.id,
+    ...docItem.data()
+  };
+}
 }
