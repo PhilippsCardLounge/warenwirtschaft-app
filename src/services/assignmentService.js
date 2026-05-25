@@ -53,7 +53,8 @@ export async function updateAssignment(
     ref,
     updatedData
   );
-  
+}
+
 // 🔍 Assignment anhand Inventar-Nummer finden
 export async function getAssignmentByInventoryNumber(
   inventoryNumber
@@ -81,5 +82,4 @@ export async function getAssignmentByInventoryNumber(
     id: docItem.id,
     ...docItem.data()
   };
-}
 }
