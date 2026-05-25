@@ -11,6 +11,138 @@ export default function SalesList({
   const [editData, setEditData] =
     useState({});
 
+  // 🔥 Sortierung
+  const sortedSales =
+    [...sales].sort((a, b) => {
+      function parseNumber(
+        item
+      ) {
+        const num =
+          (
+            item.inventoryNumber ||
+            ""
+          ).toString();
+
+        // Einzelkarten (#0001)
+        if (
+          num.startsWith("#")
+        ) {
+          return {
+            group: 0,
+
+            value:
+              parseInt(
+                num.replace(
+                  "#",
+                  ""
+                ),
+                10
+              ) || 0
+          };
+        }
+
+        // Slab (G1)
+        if (
+          num.startsWith("G")
+        ) {
+          return {
+            group: 1,
+
+            value:
+              parseInt(
+                num.replace(
+                  "G",
+                  ""
+                ),
+                10
+              ) || 0
+          };
+        }
+
+        // Sealed Promos (S1)
+        if (
+          num.startsWith("S")
+        ) {
+          return {
+            group: 2,
+
+            value:
+              parseInt(
+                num.replace(
+                  "S",
+                  ""
+                ),
+                10
+              ) || 0
+          };
+        }
+
+        // Booster/Box (B1)
+        if (
+          num.startsWith("B")
+        ) {
+          return {
+            group: 3,
+
+            value:
+              parseInt(
+                num.replace(
+                  "B",
+                  ""
+                ),
+                10
+              ) || 0
+          };
+        }
+
+        // Merch (M1)
+        if (
+          num.startsWith("M")
+        ) {
+          return {
+            group: 4,
+
+            value:
+              parseInt(
+                num.replace(
+                  "M",
+                  ""
+                ),
+                10
+              ) || 0
+          };
+        }
+
+        return {
+          group: 99,
+          value: 0
+        };
+      }
+
+      const aParsed =
+        parseNumber(a);
+
+      const bParsed =
+        parseNumber(b);
+
+      // zuerst Gruppe
+      if (
+        aParsed.group !==
+        bParsed.group
+      ) {
+        return (
+          aParsed.group -
+          bParsed.group
+        );
+      }
+
+      // dann Nummer innerhalb der Gruppe
+      return (
+        bParsed.value -
+        aParsed.value
+      );
+    });
+
   function calculateTotalProfit() {
     return sales.reduce(
       (sum, sale) => {
@@ -113,7 +245,7 @@ export default function SalesList({
         €
       </div>
 
-      {sales.map((sale) => (
+      {sortedSales.map((sale) => (
         <div
           key={sale.id}
           style={{
@@ -251,7 +383,7 @@ export default function SalesList({
                 "-"}{" "}
               | Sprache:{" "}
               {sale.language ||
-                "-"}{" "}
+                "-"}
 
               <br />
 
