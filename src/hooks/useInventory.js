@@ -13,6 +13,12 @@ import {
 } from "../services/salesService";
 
 import {
+  addAssignment,
+  getAssignmentByInventoryNumber,
+  updateAssignment
+} from "../services/assignmentService";
+
+import {
   getInventorySettings,
   generateInventoryNumber,
   incrementInventoryNumber
@@ -128,6 +134,38 @@ export function useInventory() {
 
     await addItem(newItem);
 
+    // 🔥 Assignment erzeugen
+    await addAssignment({
+      paymentDate:
+        data.paymentDate ||
+        new Date()
+          .toISOString()
+          .split("T")[0],
+
+      paymentAmount:
+        parseFloat(
+          data.purchasePrice
+        ) || 0,
+
+      platform:
+        data.platform ||
+        "Unbekannt",
+
+      seller:
+        data.purchaseSeller ||
+        "Altbestand",
+
+      inventoryNumber,
+
+      cardName: data.name,
+
+      status: "im Inventar",
+
+      saleDate: null,
+
+      salePrice: null
+    });
+
     // 🔥 Counter intelligent erhöhen
     const updatedSettings =
       await incrementInventoryNumber(
@@ -234,6 +272,28 @@ export function useInventory() {
       date:
         new Date().toISOString()
     });
+
+
+    // 🔥 Passendes Assignment finden
+    const assignment =
+      await getAssignmentByInventoryNumber(
+        item.inventoryNumber
+      );
+
+    // 🔥 Assignment aktualisieren
+    if (assignment) {
+      await updateAssignment(
+        assignment.id,
+        {
+          status: "verkauft",
+
+          saleDate:
+            new Date().toISOString(),
+
+          salePrice
+        }
+      );
+    }
 
     // 🔥 Karte aus Inventar entfernen
     await deleteItem(item.id);
