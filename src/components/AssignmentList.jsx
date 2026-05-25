@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 export default function AssignmentList({
-  assignments
+  assignments,
+  items = [],
+  sales = []
 }) {
   const [search, setSearch] =
     useState("");
@@ -91,6 +93,36 @@ export default function AssignmentList({
       }
     );
 
+  // 🔥 Alle existierenden Nummern
+  const existingAssignmentNumbers =
+    assignments.map(
+      (assignment) =>
+        assignment.inventoryNumber
+    );
+
+  // 🔥 Fehlende Inventar-Karten
+  const missingInventoryAssignments =
+    items.filter(
+      (item) =>
+        !existingAssignmentNumbers.includes(
+          item.inventoryNumber
+        )
+    );
+
+  // 🔥 Fehlende Verkaufs-Karten
+  const missingSalesAssignments =
+    sales.filter(
+      (sale) =>
+        !existingAssignmentNumbers.includes(
+          sale.inventoryNumber
+        )
+    );
+
+  // 🔥 Gesamt
+  const totalMissing =
+    missingInventoryAssignments.length +
+    missingSalesAssignments.length;
+
   return (
     <div
       style={{
@@ -98,6 +130,95 @@ export default function AssignmentList({
         margin: "0 auto"
       }}
     >
+      {/* 🔥 Fehlende Assignments */}
+      <div
+        style={{
+          background: "#fff8e1",
+          border:
+            "1px solid #facc15",
+          borderRadius: "14px",
+          padding: "18px",
+          marginBottom: "25px"
+        }}
+      >
+        <h2
+          style={{
+            marginTop: 0
+          }}
+        >
+          Fehlende Assignments
+        </h2>
+
+        <div
+          style={{
+            fontWeight: "600",
+            marginBottom: "15px"
+          }}
+        >
+          {totalMissing} Karten
+          ohne Assignment
+          gefunden
+        </div>
+
+        {/* 🔥 Inventar */}
+        {missingInventoryAssignments.length >
+          0 && (
+          <>
+            <h3>
+              Im Inventar
+            </h3>
+
+            {missingInventoryAssignments.map(
+              (item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    marginBottom:
+                      "6px"
+                  }}
+                >
+                  {
+                    item.inventoryNumber
+                  }{" "}
+                  — {item.name}
+                </div>
+              )
+            )}
+          </>
+        )}
+
+        {/* 🔥 Verkäufe */}
+        {missingSalesAssignments.length >
+          0 && (
+          <>
+            <h3
+              style={{
+                marginTop: "20px"
+              }}
+            >
+              Bereits verkauft
+            </h3>
+
+            {missingSalesAssignments.map(
+              (sale) => (
+                <div
+                  key={sale.id}
+                  style={{
+                    marginBottom:
+                      "6px"
+                  }}
+                >
+                  {
+                    sale.inventoryNumber
+                  }{" "}
+                  — {sale.name}
+                </div>
+              )
+            )}
+          </>
+        )}
+      </div>
+
       {/* 🔍 Suche */}
       <input
         type="text"

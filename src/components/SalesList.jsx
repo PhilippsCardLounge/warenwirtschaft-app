@@ -4,7 +4,8 @@ export default function SalesList({
   sales,
   items,
   onEdit,
-  onDelete
+  onDelete,
+  onSell
 }) {
   const [editingId, setEditingId] =
     useState(null);
@@ -92,7 +93,10 @@ export default function SalesList({
 
           cardName:
             matchingItem?.name ||
-            null
+            null,
+
+          matchedItem:
+            matchingItem || null
         });
 
         currentNumber =
@@ -101,6 +105,45 @@ export default function SalesList({
     }
 
     setParsedSales(results);
+  }
+
+  // 🔥 Einzelverkauf
+  async function handleParsedSale(
+    parsedSale
+  ) {
+    if (
+      !parsedSale.matchedItem
+    ) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `${parsedSale.inventoryNumber} wirklich verkaufen?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await onSell(
+      parsedSale.matchedItem,
+      {
+        salePrice:
+          parsedSale.salePrice,
+
+        feePercent: 5
+      }
+    );
+
+    // 🔥 Aus Vorschlagsliste entfernen
+    setParsedSales((prev) =>
+      prev.filter(
+        (sale) =>
+          sale.inventoryNumber !==
+          parsedSale.inventoryNumber
+      )
+    );
   }
 
   // 🔥 Sortierung
@@ -271,7 +314,6 @@ export default function SalesList({
         editData.feePercent
       ) || 0;
 
-    // 🔥 Gebühren neu berechnen
     const feeAmount =
       salePrice *
       (feePercent / 100);
@@ -409,13 +451,28 @@ export default function SalesList({
                   <br />
 
                   {parsedSale.found ? (
-                    <span>
-                      ✅ Gefunden:
-                      {" "}
-                      {
-                        parsedSale.cardName
-                      }
-                    </span>
+                    <>
+                      <span>
+                        ✅ Gefunden:
+                        {" "}
+                        {
+                          parsedSale.cardName
+                        }
+                      </span>
+
+                      <br />
+                      <br />
+
+                      <button
+                        onClick={() =>
+                          handleParsedSale(
+                            parsedSale
+                          )
+                        }
+                      >
+                        ✅ Verkaufen
+                      </button>
+                    </>
                   ) : (
                     <span>
                       ❌ Nicht im
@@ -447,13 +504,11 @@ export default function SalesList({
           style={{
             borderBottom:
               "1px solid #ccc",
-
             padding: "8px"
           }}
         >
           {editingId === sale.id ? (
             <>
-              {/* 🔥 Name */}
               <input
                 value={
                   editData.name || ""
@@ -470,7 +525,6 @@ export default function SalesList({
               <br />
               <br />
 
-              {/* 🔥 Einkaufspreis */}
               Einkaufspreis:
               <input
                 type="number"
@@ -493,7 +547,6 @@ export default function SalesList({
               <br />
               <br />
 
-              {/* 🔥 Verkaufspreis */}
               Verkaufspreis:
               <input
                 type="number"
@@ -516,7 +569,6 @@ export default function SalesList({
               <br />
               <br />
 
-              {/* 🔥 Gebühren */}
               Gebühren %:
               <input
                 type="number"
@@ -563,7 +615,6 @@ export default function SalesList({
             </>
           ) : (
             <>
-              {/* 🔢 Nummer + Name */}
               <strong>
                 {
                   sale.inventoryNumber
@@ -573,7 +624,6 @@ export default function SalesList({
 
               <br />
 
-              {/* 🔥 Infos */}
               Zustand:{" "}
               {sale.condition ||
                 "-"}{" "}
@@ -583,7 +633,6 @@ export default function SalesList({
 
               <br />
 
-              {/* 💰 Einkauf */}
               Einkaufspreis:{" "}
               {sale.purchasePrice !==
                 null &&
@@ -596,7 +645,6 @@ export default function SalesList({
 
               <br />
 
-              {/* 💸 Verkauf */}
               Verkaufspreis:{" "}
               {sale.salePrice !==
                 null &&
@@ -609,7 +657,6 @@ export default function SalesList({
 
               <br />
 
-              {/* 🔥 Gewinn */}
               Gewinn:{" "}
               {sale.profit !==
                 null &&
@@ -623,7 +670,6 @@ export default function SalesList({
               <br />
               <br />
 
-              {/* 🔥 Aktionen */}
               <button
                 onClick={() =>
                   startEdit(sale)

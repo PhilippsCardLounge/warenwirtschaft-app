@@ -581,6 +581,7 @@ export default function App() {
             items={items}
             onEdit={editSale}
             onDelete={removeSale}
+            onSell={handleSell}
           />
         </div>
       )}
@@ -595,6 +596,8 @@ export default function App() {
             assignments={
               assignments
             }
+            items={items}
+            sales={sales}
           />
         </div>
       )}
