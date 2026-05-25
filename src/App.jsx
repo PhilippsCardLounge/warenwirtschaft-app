@@ -6,10 +6,12 @@ import SearchFilter from "./components/SearchFilter";
 import CSVImport from "./components/CSVImport";
 import CSVRowForm from "./components/CSVRowForm";
 import SalesList from "./components/SalesList";
+import AssignmentList from "./components/AssignmentList";
 import QuickAddCard from "./components/QuickAddCard";
 
 import { useInventory } from "./hooks/useInventory";
 import { useSales } from "./hooks/useSales";
+import { useAssignments } from "./hooks/useAssignments";
 import { useOpenPurchases } from "./hooks/useOpenPurchases";
 
 import {
@@ -58,6 +60,10 @@ export default function App() {
     editSale,
     removeSale
   } = useSales();
+
+  const {
+    assignments
+  } = useAssignments();
 
   const {
     purchases,
@@ -356,6 +362,19 @@ export default function App() {
         >
           Verkäufe
         </button>
+
+        <button
+          onClick={() =>
+            setActiveTab(
+              "assignments"
+            )
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
+          Assignments
+        </button>
       </div>
 
       {/* 🔁 Undo */}
@@ -561,6 +580,20 @@ export default function App() {
             sales={sales}
             onEdit={editSale}
             onDelete={removeSale}
+          />
+        </div>
+      )}
+
+      {/* 🔥 ASSIGNMENTS */}
+      {activeTab ===
+        "assignments" && (
+        <div>
+          <h2>Assignments</h2>
+
+          <AssignmentList
+            assignments={
+              assignments
+            }
           />
         </div>
       )}
