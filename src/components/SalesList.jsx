@@ -25,6 +25,11 @@ export default function SalesList({
     setParsedSales
   ] = useState([]);
 
+  const [
+    bulkSelling,
+    setBulkSelling
+  ] = useState(false);
+
   // 🔥 Verkäufe analysieren
   function analyzeSalesText() {
     const lines =
@@ -32,18 +37,30 @@ export default function SalesList({
 
     const results = [];
 
-    let currentNumber =
-      null;
+    let currentNumbers = [];
 
     for (const line of lines) {
-      // 🔥 Nummer erkennen
-      const numberMatch =
-        line.match(
-          /Daily Shipping\s*\/\/\s*(\d+)/i
-        );
+      // 🔥 ALLE Nummern erkennen
+      const numberMatches = [
+        ...line.matchAll(
+          /(\d{3,5})/g
+        )
+      ];
 
-      if (numberMatch) {
-        currentNumber = `#${numberMatch[1]}`;
+      // 🔥 Nur bei Daily Shipping Zeilen
+      if (
+        line
+          .toLowerCase()
+          .includes(
+            "daily shipping"
+          ) &&
+        numberMatches.length > 0
+      ) {
+        currentNumbers =
+          numberMatches.map(
+            (match) =>
+              `#${match[1]}`
+          );
       }
 
       // 🔥 Preis erkennen
@@ -54,7 +71,7 @@ export default function SalesList({
 
       if (
         priceMatch &&
-        currentNumber
+        currentNumbers.length > 0
       ) {
         const parsedPrice =
           parseFloat(
@@ -64,26 +81,53 @@ export default function SalesList({
             )
           );
 
-        // 🔥 Inventar durchsuchen
-        const matchingItem =
-          items.find(
-            (item) =>
-              (
-                item.inventoryNumber ||
-                ""
-              )
-                .toString()
-                .trim()
-                .toLowerCase() ===
-              currentNumber
-                .toString()
-                .trim()
-                .toLowerCase()
-          );
+        let matchingItem =
+          null;
+
+        let matchedNumber =
+          null;
+
+        // 🔥 Erste passende Nummer suchen
+        for (const number of currentNumbers) {
+          const foundItem =
+            items.find(
+              (item) =>
+                (
+                  item.inventoryNumber ||
+                  ""
+                )
+                  .toString()
+                  .trim()
+                  .toLowerCase() ===
+                number
+                  .toString()
+                  .trim()
+                  .toLowerCase()
+            );
+
+          if (foundItem) {
+            matchingItem =
+              foundItem;
+
+            matchedNumber =
+              number;
+
+            break;
+          }
+        }
+
+        // 🔥 Falls keine gefunden
+        if (!matchedNumber) {
+          matchedNumber =
+            currentNumbers[0];
+        }
 
         results.push({
           inventoryNumber:
-            currentNumber,
+            matchedNumber,
+
+          allDetectedNumbers:
+            currentNumbers,
 
           salePrice:
             parsedPrice,
@@ -99,8 +143,7 @@ export default function SalesList({
             matchingItem || null
         });
 
-        currentNumber =
-          null;
+        currentNumbers = [];
       }
     }
 
@@ -144,6 +187,117 @@ export default function SalesList({
           parsedSale.inventoryNumber
       )
     );
+  }
+
+  // 🔥 Alle verkaufen
+  async function handleSellAll() {
+    const sellableSales =
+      parsedSales.filter(
+        (sale) =>
+          sale.found &&
+          sale.matchedItem
+      );
+
+    const failedSales =
+      parsedSales.filter(
+        (sale) =>
+          !sale.found ||
+          !sale.matchedItem
+      );
+
+    if (
+      sellableSales.length === 0
+    ) {
+      alert(
+        "Keine verkaufbaren Karten gefunden"
+      );
+
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `${sellableSales.length} Karten gesammelt verkaufen?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBulkSelling(true);
+
+    const successfulSales =
+      [];
+
+    const failedDuringSell =
+      [];
+
+    try {
+      // 🔥 Verkäufe durchführen
+      for (const sale of sellableSales) {
+        try {
+          await onSell(
+            sale.matchedItem,
+            {
+              salePrice:
+                sale.salePrice,
+
+              feePercent: 5
+            }
+          );
+
+          successfulSales.push(
+            sale
+          );
+        } catch (error) {
+          console.error(error);
+
+          failedDuringSell.push(
+            sale
+          );
+        }
+      }
+
+      // 🔥 Alles sauber zurücksetzen
+      setParsedSales([]);
+
+      setSaleText("");
+
+      // 🔥 Fehlgeschlagene sammeln
+      const totalFailed = [
+        ...failedSales,
+        ...failedDuringSell
+      ];
+
+      // 🔥 Erfolgsmeldung
+      let message =
+        `${successfulSales.length} Karten erfolgreich verkauft`;
+
+      if (
+        totalFailed.length > 0
+      ) {
+        message += `\n\n${totalFailed.length} Verkäufe konnten nicht automatisch verarbeitet werden:\n`;
+
+        totalFailed.forEach(
+          (sale) => {
+            message += `\n${sale.inventoryNumber}`;
+          }
+        );
+
+        message +=
+          "\n\nBitte manuell prüfen.";
+      }
+
+      alert(message);
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Fehler beim Sammelverkauf"
+      );
+    }
+
+    setBulkSelling(false);
   }
 
   // 🔥 Sortierung
@@ -422,6 +576,24 @@ export default function SalesList({
             <h3>
               Erkannte Verkäufe
             </h3>
+
+            {/* 🔥 ALLE VERKAUFEN */}
+            <button
+              onClick={
+                handleSellAll
+              }
+              disabled={
+                bulkSelling
+              }
+              style={{
+                marginBottom:
+                  "20px"
+              }}
+            >
+              {bulkSelling
+                ? "Verkäufe laufen..."
+                : "✅ Alle verkaufen"}
+            </button>
 
             {parsedSales.map(
               (

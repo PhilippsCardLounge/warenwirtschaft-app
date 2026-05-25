@@ -117,3 +117,28 @@ export async function getSoldAssignmentByInventoryNumber(
     ...docItem.data()
   };
 }
+
+// 🔥 Assignment nur erstellen wenn keines existiert
+export async function createAssignmentIfMissing(
+  assignmentData
+) {
+  const existing =
+    await getAssignmentByInventoryNumber(
+      assignmentData.inventoryNumber
+    );
+
+  // 🔥 Bereits vorhanden
+  if (existing) {
+    console.log(
+      "⚠️ Assignment existiert bereits:",
+      assignmentData.inventoryNumber
+    );
+
+    return null;
+  }
+
+  // 🔥 Neu erstellen
+  return await addAssignment(
+    assignmentData
+  );
+}

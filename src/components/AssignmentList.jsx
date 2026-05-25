@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+import {
+  createAssignmentIfMissing
+} from "../services/assignmentService";
+
 export default function AssignmentList({
   assignments,
   items = [],
@@ -7,6 +11,11 @@ export default function AssignmentList({
 }) {
   const [search, setSearch] =
     useState("");
+
+  const [
+    migrationRunning,
+    setMigrationRunning
+  ] = useState(false);
 
   // 🔥 Sortierung
   const sortedAssignments =
@@ -123,6 +132,108 @@ export default function AssignmentList({
     missingInventoryAssignments.length +
     missingSalesAssignments.length;
 
+  // 🔥 Migration starten
+  async function handleMigration() {
+    const confirmed =
+      window.confirm(
+        `${totalMissing} fehlende Assignments erzeugen?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setMigrationRunning(true);
+
+    try {
+      // 🔥 Inventar
+      for (const item of missingInventoryAssignments) {
+        await createAssignmentIfMissing(
+          {
+            paymentDate:
+              "Unbekannt",
+
+            paymentAmount:
+              item.purchasePrice ||
+              0,
+
+            platform:
+              "Altbestand",
+
+            seller:
+              item.purchaseSeller ||
+              "Altbestand",
+
+            inventoryNumber:
+              item.inventoryNumber,
+
+            cardName:
+              item.name,
+
+            status:
+              "im Inventar",
+
+            saleDate: null,
+
+            salePrice: null
+          }
+        );
+      }
+
+      // 🔥 Verkäufe
+      for (const sale of missingSalesAssignments) {
+        await createAssignmentIfMissing(
+          {
+            paymentDate:
+              "Unbekannt",
+
+            paymentAmount:
+              sale.purchasePrice ||
+              0,
+
+            platform:
+              "Altbestand",
+
+            seller:
+              sale.purchaseSeller ||
+              "Altbestand",
+
+            inventoryNumber:
+              sale.inventoryNumber,
+
+            cardName:
+              sale.name,
+
+            status:
+              "verkauft",
+
+            saleDate:
+              sale.saleDate ||
+              null,
+
+            salePrice:
+              sale.salePrice ||
+              null
+          }
+        );
+      }
+
+      alert(
+        "Migration erfolgreich abgeschlossen!"
+      );
+
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Fehler bei der Migration"
+      );
+    }
+
+    setMigrationRunning(false);
+  }
+
   return (
     <div
       style={{
@@ -159,6 +270,31 @@ export default function AssignmentList({
           ohne Assignment
           gefunden
         </div>
+
+        {/* 🔥 BUTTON */}
+        {totalMissing > 0 && (
+          <button
+            onClick={
+              handleMigration
+            }
+            disabled={
+              migrationRunning
+            }
+            style={{
+              marginBottom:
+                "20px",
+              padding:
+                "10px 16px",
+              borderRadius:
+                "10px",
+              cursor: "pointer"
+            }}
+          >
+            {migrationRunning
+              ? "Migration läuft..."
+              : "Fehlende Assignments erzeugen"}
+          </button>
+        )}
 
         {/* 🔥 Inventar */}
         {missingInventoryAssignments.length >
