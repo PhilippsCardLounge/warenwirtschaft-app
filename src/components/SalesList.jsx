@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function SalesList({
   sales,
+  items,
   onEdit,
   onDelete
 }) {
@@ -10,6 +11,97 @@ export default function SalesList({
 
   const [editData, setEditData] =
     useState({});
+
+  // 🔥 Verkaufstext
+  const [
+    saleText,
+    setSaleText
+  ] = useState("");
+
+  // 🔥 Analyse-Ergebnisse
+  const [
+    parsedSales,
+    setParsedSales
+  ] = useState([]);
+
+  // 🔥 Verkäufe analysieren
+  function analyzeSalesText() {
+    const lines =
+      saleText.split("\n");
+
+    const results = [];
+
+    let currentNumber =
+      null;
+
+    for (const line of lines) {
+      // 🔥 Nummer erkennen
+      const numberMatch =
+        line.match(
+          /Daily Shipping\s*\/\/\s*(\d+)/i
+        );
+
+      if (numberMatch) {
+        currentNumber = `#${numberMatch[1]}`;
+      }
+
+      // 🔥 Preis erkennen
+      const priceMatch =
+        line.match(
+          /(\d+,\d+)\s*€/i
+        );
+
+      if (
+        priceMatch &&
+        currentNumber
+      ) {
+        const parsedPrice =
+          parseFloat(
+            priceMatch[1].replace(
+              ",",
+              "."
+            )
+          );
+
+        // 🔥 Inventar durchsuchen
+        const matchingItem =
+          items.find(
+            (item) =>
+              (
+                item.inventoryNumber ||
+                ""
+              )
+                .toString()
+                .trim()
+                .toLowerCase() ===
+              currentNumber
+                .toString()
+                .trim()
+                .toLowerCase()
+          );
+
+        results.push({
+          inventoryNumber:
+            currentNumber,
+
+          salePrice:
+            parsedPrice,
+
+          found:
+            !!matchingItem,
+
+          cardName:
+            matchingItem?.name ||
+            null
+        });
+
+        currentNumber =
+          null;
+      }
+    }
+
+    setParsedSales(results);
+  }
 
   // 🔥 Sortierung
   const sortedSales =
@@ -232,6 +324,110 @@ export default function SalesList({
       }}
     >
       <h2>Verkäufe</h2>
+
+      {/* 🔥 ANALYSE */}
+      <div
+        style={{
+          background: "white",
+          padding: "20px",
+          borderRadius: "14px",
+          marginBottom: "20px",
+          border:
+            "1px solid #ddd"
+        }}
+      >
+        <h3>
+          Verkäufe analysieren
+        </h3>
+
+        <textarea
+          value={saleText}
+          onChange={(e) =>
+            setSaleText(
+              e.target.value
+            )
+          }
+          placeholder="Cardmarket-Verkäufe hier einfügen..."
+          style={{
+            width: "100%",
+            minHeight: "220px",
+            padding: "12px",
+            borderRadius: "10px",
+            border:
+              "1px solid #ccc",
+            boxSizing:
+              "border-box",
+            marginBottom: "12px"
+          }}
+        />
+
+        <button
+          onClick={
+            analyzeSalesText
+          }
+        >
+          Verkäufe analysieren
+        </button>
+
+        {/* 🔥 Ergebnisse */}
+        {parsedSales.length >
+          0 && (
+          <div
+            style={{
+              marginTop: "20px"
+            }}
+          >
+            <h3>
+              Erkannte Verkäufe
+            </h3>
+
+            {parsedSales.map(
+              (
+                parsedSale,
+                index
+              ) => (
+                <div
+                  key={index}
+                  style={{
+                    padding:
+                      "12px",
+                    borderBottom:
+                      "1px solid #ddd"
+                  }}
+                >
+                  <strong>
+                    {
+                      parsedSale.inventoryNumber
+                    }
+                  </strong>{" "}
+                  →{" "}
+                  {
+                    parsedSale.salePrice
+                  }
+                  €
+
+                  <br />
+
+                  {parsedSale.found ? (
+                    <span>
+                      ✅ Gefunden:
+                      {" "}
+                      {
+                        parsedSale.cardName
+                      }
+                    </span>
+                  ) : (
+                    <span>
+                      ❌ Nicht im
+                      Inventar gefunden
+                    </span>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </div>
 
       <div
         style={{

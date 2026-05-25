@@ -578,6 +578,7 @@ export default function App() {
         <div>
           <SalesList
             sales={sales}
+            items={items}
             onEdit={editSale}
             onDelete={removeSale}
           />
