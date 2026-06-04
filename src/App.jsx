@@ -13,6 +13,9 @@ import { useInventory } from "./hooks/useInventory";
 import { useSales } from "./hooks/useSales";
 import { useAssignments } from "./hooks/useAssignments";
 import { useOpenPurchases } from "./hooks/useOpenPurchases";
+import PaymentsList from "./components/PaymentsList";
+
+import { usePayments } from "./hooks/usePayments";
 
 import {
   getImportedPurchases,
@@ -23,6 +26,11 @@ import {
   exportBackup,
   importBackup
 } from "./services/backupService";
+
+import {
+  createPaymentIfMissing,
+  addCardToPayment
+} from "./services/paymentService";
 
 export default function App() {
   // 🔒 Passwortschutz
@@ -64,6 +72,10 @@ export default function App() {
   const {
     assignments
   } = useAssignments();
+  
+  const {
+  payments
+} = usePayments();
 
   const {
     purchases,
@@ -328,6 +340,19 @@ export default function App() {
 
         <button
           onClick={() =>
+            setActiveTab(
+              "payments"
+            )
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
+          Zahlungen
+        </button>
+
+        <button
+          onClick={() =>
             setActiveTab("csv")
           }
           style={{
@@ -474,6 +499,18 @@ export default function App() {
         </div>
       )}
 
+      {/* 💳 ZAHLUNGEN */}
+      {activeTab ===
+        "payments" && (
+        <div>
+          <h2>Zahlungen</h2>
+
+          <PaymentsList
+            payments={payments}
+          />
+        </div>
+      )}
+
       {/* 📥 OFFENE EINKÄUFE */}
       {activeTab === "csv" && (
         <div>
@@ -519,11 +556,14 @@ export default function App() {
                     )
                   }
                   onCreate={async (data) => {
-                    const success =
+                    const result =
                       await createItem(data);
 
-                    // 🔥 Nur löschen wenn Karte erfolgreich erstellt
-                    if (success) {
+                    if (
+                      result?.success
+                    ) {
+                      
+                      // 🔥 Einkauf löschen
                       await removePurchase(
                         entry.id
                       );
@@ -538,6 +578,7 @@ export default function App() {
                       );
                     }
                   }}
+
                   onRemove={() =>
                     removePurchase(
                       entry.id
