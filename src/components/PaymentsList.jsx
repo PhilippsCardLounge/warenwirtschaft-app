@@ -1,5 +1,6 @@
 export default function PaymentsList({
-  payments
+  payments,
+  items
 }) {
   const sortedPayments =
     [...payments].sort(
@@ -17,6 +18,22 @@ export default function PaymentsList({
         return dateB - dateA;
       }
     );
+
+  function getCardLabel(
+    inventoryNumber
+  ) {
+    const item = items?.find(
+      (card) =>
+        card.inventoryNumber ===
+        inventoryNumber
+    );
+
+    if (!item) {
+      return inventoryNumber;
+    }
+
+    return `${inventoryNumber} ${item.name}`;
+  }
 
   return (
     <div
@@ -169,7 +186,9 @@ export default function PaymentsList({
                           "4px"
                       }}
                     >
-                      {card}
+                      {getCardLabel(
+                        card
+                      )}
                     </div>
                   )
                 )}

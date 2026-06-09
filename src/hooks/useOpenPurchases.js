@@ -1,25 +1,67 @@
 import { useEffect, useState } from "react";
+
 import {
-  getOpenPurchases,
+  getActivePurchases,
+  getProcessedPurchases,
   addOpenPurchase,
-  deleteOpenPurchase
+  updateOpenPurchase
 } from "../services/openPurchasesService";
 
 export function useOpenPurchases() {
-  const [purchases, setPurchases] = useState([]);
+  const [purchases, setPurchases] =
+    useState([]);
+
+  const [
+    processedPurchases,
+    setProcessedPurchases
+  ] = useState([]);
 
   async function loadPurchases() {
-    const data = await getOpenPurchases();
-    setPurchases(data);
+    const active =
+      await getActivePurchases();
+
+    const processed =
+      await getProcessedPurchases();
+
+    setPurchases(active);
+
+    setProcessedPurchases(
+      processed.sort(
+        (a, b) =>
+          new Date(
+            b.processedAt || 0
+          ) -
+          new Date(
+            a.processedAt || 0
+          )
+      )
+    );
   }
 
-  async function addPurchase(purchase) {
-    await addOpenPurchase(purchase);
+  async function addPurchase(
+    purchase
+  ) {
+    await addOpenPurchase(
+      purchase
+    );
+
     await loadPurchases();
   }
 
-  async function removePurchase(id) {
-    await deleteOpenPurchase(id);
+  async function removePurchase(
+    id
+  ) {
+    await updateOpenPurchase(
+      id,
+      {
+        status:
+          "verarbeitet",
+
+        processedAt:
+          new Date().toISOString()
+      }
+    );
+
     await loadPurchases();
   }
 
@@ -29,6 +71,7 @@ export function useOpenPurchases() {
 
   return {
     purchases,
+    processedPurchases,
     addPurchase,
     removePurchase,
     reload: loadPurchases

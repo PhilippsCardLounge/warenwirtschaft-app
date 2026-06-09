@@ -79,6 +79,7 @@ export default function App() {
 
   const {
     purchases,
+    processedPurchases,
     addPurchase,
     removePurchase
   } = useOpenPurchases();
@@ -353,6 +354,19 @@ export default function App() {
 
         <button
           onClick={() =>
+            setActiveTab(
+              "history"
+            )
+          }
+          style={{
+            marginLeft: "5px"
+          }}
+        >
+          Historie
+        </button>
+
+        <button
+          onClick={() =>
             setActiveTab("csv")
           }
           style={{
@@ -507,7 +521,131 @@ export default function App() {
 
           <PaymentsList
             payments={payments}
+            items={items}
           />
+        </div>
+      )}
+      {/* 📚 HISTORIE */}
+      {activeTab ===
+        "history" && (
+        <div>
+          <h2>
+            Verarbeitete Einkäufe
+          </h2>
+
+          {processedPurchases.length ===
+            0 && (
+            <div>
+              Noch keine
+              verarbeiteten
+              Einkäufe vorhanden.
+            </div>
+          )}
+
+          {processedPurchases.map(
+            (purchase) => {
+              const payment =
+                payments.find(
+                  (p) =>
+                    p.sourcePurchaseId ===
+                    purchase.id
+                );
+
+              return (
+                <div
+                  key={purchase.id}
+                  style={{
+                    background:
+                      "white",
+                    borderRadius:
+                      "12px",
+                    padding:
+                      "15px",
+                    marginBottom:
+                      "12px",
+                    border:
+                      "1px solid #ddd"
+                  }}
+                >
+                  <div>
+                    <strong>
+                      Datum:
+                    </strong>{" "}
+                    {
+                      purchase.date
+                    }
+                  </div>
+
+                  <div>
+                    <strong>
+                      Verkäufer:
+                    </strong>{" "}
+                    {
+                      purchase.seller
+                    }
+                  </div>
+
+                  <div>
+                    <strong>
+                      Betrag:
+                    </strong>{" "}
+                    {
+                      purchase.price
+                    }
+                    €
+                  </div>
+
+                  <div>
+                    <strong>
+                      Verarbeitet:
+                    </strong>{" "}
+                    {purchase.processedAt
+                      ? new Date(
+                          purchase.processedAt
+                        ).toLocaleString(
+                          "de-DE"
+                        )
+                      : "-"}
+                  </div>
+
+                  {payment
+                    ?.assignedCards
+                    ?.length >
+                    0 && (
+                    <div
+                      style={{
+                        marginTop:
+                          "10px",
+                        paddingTop:
+                          "10px",
+                        borderTop:
+                          "1px solid #eee"
+                      }}
+                    >
+                      <strong>
+                        Erzeugte Karten:
+                      </strong>
+
+                      {payment.assignedCards.map(
+                        (
+                          card,
+                          index
+                        ) => (
+                          <div
+                            key={
+                              index
+                            }
+                          >
+                            {card}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+          )}
         </div>
       )}
 
@@ -562,7 +700,41 @@ export default function App() {
                     if (
                       result?.success
                     ) {
-                      
+                      const payment =
+                        await createPaymentIfMissing(
+                          {
+                            sourcePurchaseId:
+                              entry.id,
+
+                            paymentDate:
+                              entry.date,
+
+                            amount:
+                              parseFloat(
+                                entry.price
+                              ) || 0,
+
+                            seller:
+                              entry.seller,
+
+                            platform:
+                              "Whatnot",
+
+                            assignedCards:
+                              []
+                          }
+                        );
+
+                      if (
+                        payment &&
+                        result.inventoryNumber
+                      ) {
+                        await addCardToPayment(
+                          payment.id,
+                          result.inventoryNumber
+                        );
+                      }
+
                       // 🔥 Einkauf löschen
                       await removePurchase(
                         entry.id
