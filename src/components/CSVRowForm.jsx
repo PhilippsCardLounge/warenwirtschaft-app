@@ -144,7 +144,11 @@ export default function CSVRowForm({
       inventoryNumber,
 
       purchaseDate: entry.date,
-      purchaseSeller: entry.seller
+      purchaseSeller: entry.seller,
+
+      cardCount: 1,
+
+      isFirstCard: true
     });
 
     setTimeout(() => {
@@ -224,7 +228,12 @@ export default function CSVRowForm({
 
         purchaseDate: entry.date,
         purchaseSeller:
-          entry.seller
+          entry.seller,
+
+        cardCount: count,
+
+        isFirstCard:
+          i === 0
       });
     }
 

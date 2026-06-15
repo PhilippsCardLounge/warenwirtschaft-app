@@ -132,7 +132,7 @@ export default function PaymentsList({
               }
             </div>
 
-            {/* Kartenanzahl */}
+            {/* Startnummer */}
             <div
               style={{
                 textAlign:
@@ -140,60 +140,30 @@ export default function PaymentsList({
                 fontWeight:
                   "600",
                 marginBottom:
-                  "12px"
+                  "8px"
               }}
             >
-              Zugeordnete Karten:{" "}
-              {payment
-                .assignedCards
-                ?.length || 0}
+              Startnummer:{" "}
+              {
+                payment.firstInventoryNumber
+              }
             </div>
 
-            {/* Kartenliste */}
-            {payment
-              .assignedCards
-              ?.length > 0 && (
-              <div
-                style={{
-                  borderTop:
-                    "1px solid #eee",
-                  paddingTop:
-                    "10px"
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight:
-                      "600",
-                    marginBottom:
-                      "8px"
-                  }}
-                >
-                  Karten:
-                </div>
-
-                {payment.assignedCards.map(
-                  (
-                    card,
-                    index
-                  ) => (
-                    <div
-                      key={
-                        index
-                      }
-                      style={{
-                        marginBottom:
-                          "4px"
-                      }}
-                    >
-                      {getCardLabel(
-                        card
-                      )}
-                    </div>
-                  )
-                )}
-              </div>
-            )}
+            {/* Anzahl Karten */}
+            <div
+              style={{
+                textAlign:
+                  "center",
+                fontWeight:
+                  "600"
+              }}
+            >
+              Anzahl Karten:{" "}
+              {
+                payment.cardCount ||
+                1
+              }
+            </div>
           </div>
         )
       )}

@@ -38,31 +38,17 @@ export async function getPayments() {
   );
 }
 
-// 🔍 Zahlung finden
-export async function getPaymentByData(
-  paymentDate,
-  amount,
-  seller
+// 🔍 Zahlung anhand openPurchase finden
+export async function getPaymentBySourcePurchaseId(
+  sourcePurchaseId
 ) {
   const q = query(
     collection(db, COLLECTION),
 
     where(
-      "paymentDate",
+      "sourcePurchaseId",
       "==",
-      paymentDate
-    ),
-
-    where(
-      "amount",
-      "==",
-      amount
-    ),
-
-    where(
-      "seller",
-      "==",
-      seller
+      sourcePurchaseId
     )
   );
 
@@ -87,10 +73,8 @@ export async function createPaymentIfMissing(
   paymentData
 ) {
   const existing =
-    await getPaymentByData(
-      paymentData.paymentDate,
-      paymentData.amount,
-      paymentData.seller
+    await getPaymentBySourcePurchaseId(
+      paymentData.sourcePurchaseId
     );
 
   if (existing) {
@@ -101,10 +85,8 @@ export async function createPaymentIfMissing(
     paymentData
   );
 
-  return await getPaymentByData(
-    paymentData.paymentDate,
-    paymentData.amount,
-    paymentData.seller
+  return await getPaymentBySourcePurchaseId(
+    paymentData.sourcePurchaseId
   );
 }
 
@@ -122,46 +104,5 @@ export async function updatePayment(
   await updateDoc(
     ref,
     updatedData
-  );
-}
-
-// 🔥 Karte zu Zahlung hinzufügen
-export async function addCardToPayment(
-  paymentId,
-  inventoryNumber
-) {
-  const payments =
-    await getPayments();
-
-  const payment =
-    payments.find(
-      (p) =>
-        p.id === paymentId
-    );
-
-  if (!payment) {
-    return;
-  }
-
-  const assignedCards =
-    payment.assignedCards ||
-    [];
-
-  if (
-    assignedCards.includes(
-      inventoryNumber
-    )
-  ) {
-    return;
-  }
-
-  await updatePayment(
-    paymentId,
-    {
-      assignedCards: [
-        ...assignedCards,
-        inventoryNumber
-      ]
-    }
   );
 }

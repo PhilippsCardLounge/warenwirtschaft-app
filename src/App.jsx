@@ -28,8 +28,7 @@ import {
 } from "./services/backupService";
 
 import {
-  createPaymentIfMissing,
-  addCardToPayment
+  createPaymentIfMissing
 } from "./services/paymentService";
 
 export default function App() {
@@ -700,7 +699,10 @@ export default function App() {
                     if (
                       result?.success
                     ) {
-                      const payment =
+
+                      if (
+                        data.isFirstCard
+                      ) {
                         await createPaymentIfMissing(
                           {
                             sourcePurchaseId:
@@ -720,27 +722,19 @@ export default function App() {
                             platform:
                               "Whatnot",
 
-                            assignedCards:
-                              []
-                          }
-                        );
+                            firstInventoryNumber:
+                              result.inventoryNumber,
 
-                      if (
-                        payment &&
-                        result.inventoryNumber
-                      ) {
-                        await addCardToPayment(
-                          payment.id,
-                          result.inventoryNumber
+                            cardCount:
+                              data.cardCount || 1
+                          }
                         );
                       }
 
-                      // 🔥 Einkauf löschen
                       await removePurchase(
                         entry.id
                       );
 
-                      // 🔥 Auto-Skip
                       setTimeout(
                         () =>
                           focusNextRow(
