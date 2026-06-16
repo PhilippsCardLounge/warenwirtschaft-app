@@ -361,7 +361,7 @@ export default function App() {
             marginLeft: "5px"
           }}
         >
-          Historie
+          Kaufhistorie
         </button>
 
         <button
@@ -529,7 +529,7 @@ export default function App() {
         "history" && (
         <div>
           <h2>
-            Verarbeitete Einkäufe
+            Kaufhistorie
           </h2>
 
           {processedPurchases.length ===
@@ -541,8 +541,30 @@ export default function App() {
             </div>
           )}
 
-          {processedPurchases.map(
-            (purchase) => {
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "200px 150px 150px 120px",
+              gap: "20px",
+              fontWeight: "700",
+              marginBottom: "8px",
+              padding: "0 15px"
+            }}
+          >
+            <div>Datum</div>
+            <div>Betrag</div>
+            <div>Startnr.</div>
+            <div>Karten</div>
+          </div>
+
+          {[...processedPurchases]
+            .sort(
+              (a, b) =>
+                new Date(b.date) -
+                new Date(a.date)
+            )
+            .map((purchase) => {
               const payment =
                 payments.find(
                   (p) =>
@@ -554,93 +576,45 @@ export default function App() {
                 <div
                   key={purchase.id}
                   style={{
-                    background:
-                      "white",
-                    borderRadius:
-                      "12px",
-                    padding:
-                      "15px",
-                    marginBottom:
-                      "12px",
-                    border:
-                      "1px solid #ddd"
+                    background: "white",
+                    borderRadius: "8px",
+                    padding: "10px 15px",
+                    marginBottom: "6px",
+                    border: "1px solid #ddd",
+                    display: "grid",
+                    gridTemplateColumns:
+                      "200px 150px 150px 120px",
+                    alignItems: "center",
+                    gap: "20px"
                   }}
                 >
                   <div>
                     <strong>
-                      Datum:
-                    </strong>{" "}
-                    {
-                      purchase.date
-                    }
+                      {new Date(
+                        purchase.date
+                      ).toLocaleDateString(
+                        "de-DE"
+                      )}
+                    </strong>
                   </div>
 
                   <div>
-                    <strong>
-                      Verkäufer:
-                    </strong>{" "}
-                    {
-                      purchase.seller
-                    }
+                    {purchase.price} €
                   </div>
 
                   <div>
-                    <strong>
-                      Betrag:
-                    </strong>{" "}
-                    {
-                      purchase.price
-                    }
-                    €
+                    {payment
+                      ?.firstInventoryNumber ||
+                      "-"}
                   </div>
 
                   <div>
-                    <strong>
-                      Verarbeitet:
-                    </strong>{" "}
-                    {purchase.processedAt
-                      ? new Date(
-                          purchase.processedAt
-                        ).toLocaleString(
-                          "de-DE"
-                        )
-                      : "-"}
+                    {payment?.cardCount || 1}{" "}
+                    Karten
                   </div>
-
-                  {payment && (
-                    <div
-                      style={{
-                        marginTop:
-                          "10px",
-                        paddingTop:
-                          "10px",
-                        borderTop:
-                          "1px solid #eee"
-                      }}
-                    >
-                      <div>
-                        <strong>
-                          Startnummer:
-                        </strong>{" "}
-                        {
-                          payment.firstInventoryNumber
-                        }
-                      </div>
-
-                      <div>
-                        <strong>
-                          Anzahl Karten:
-                        </strong>{" "}
-                        {
-                          payment.cardCount || 1
-                        }
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
-            }
-          )}
+            })}
         </div>
       )}
 
