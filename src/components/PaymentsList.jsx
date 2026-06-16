@@ -1,39 +1,12 @@
 export default function PaymentsList({
-  payments,
-  items
+  payments
 }) {
   const sortedPayments =
     [...payments].sort(
-      (a, b) => {
-        const dateA =
-          new Date(
-            a.paymentDate
-          );
-
-        const dateB =
-          new Date(
-            b.paymentDate
-          );
-
-        return dateB - dateA;
-      }
+      (a, b) =>
+        new Date(b.paymentDate) -
+        new Date(a.paymentDate)
     );
-
-  function getCardLabel(
-    inventoryNumber
-  ) {
-    const item = items?.find(
-      (card) =>
-        card.inventoryNumber ===
-        inventoryNumber
-    );
-
-    if (!item) {
-      return inventoryNumber;
-    }
-
-    return `${inventoryNumber} ${item.name}`;
-  }
 
   return (
     <div
@@ -50,122 +23,80 @@ export default function PaymentsList({
         </div>
       )}
 
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "160px 120px 140px 120px 180px",
+          gap: "20px",
+          fontWeight: "700",
+          marginBottom: "8px",
+          padding: "0 15px"
+        }}
+      >
+        <div>Datum</div>
+        <div>Betrag</div>
+        <div>Startnr.</div>
+        <div>Karten</div>
+        <div>Verkäufer</div>
+      </div>
+
       {sortedPayments.map(
-        (payment) => (
-          <div
-            key={payment.id}
-            style={{
-              background:
-                "white",
-              borderRadius:
-                "14px",
-              padding: "18px",
-              marginBottom:
-                "18px",
-              boxShadow:
-                "0 2px 10px rgba(0,0,0,0.08)",
-              border:
-                "1px solid #e5e7eb"
-            }}
-          >
-            {/* Datum */}
-            <div
-              style={{
-                fontSize:
-                  "20px",
-                fontWeight:
-                  "700",
-                textAlign:
-                  "center",
-                marginBottom:
-                  "10px"
-              }}
-            >
-              {
-                payment.paymentDate
-              }
-            </div>
+        (payment) => {
+          const cardCount =
+            payment.cardCount || 1;
 
-            {/* Betrag */}
+          return (
             <div
+              key={payment.id}
               style={{
-                textAlign:
-                  "center",
-                marginBottom:
-                  "8px"
+                background: "white",
+                borderRadius: "8px",
+                padding: "10px 15px",
+                marginBottom: "6px",
+                border: "1px solid #ddd",
+                display: "grid",
+                gridTemplateColumns:
+                  "160px 120px 140px 120px 180px",
+                alignItems: "center",
+                gap: "20px"
               }}
             >
-              Betrag:{" "}
-              {
-                payment.amount
-              }
-              €
-            </div>
+              <div>
+                <strong>
+                  {new Date(
+                    payment.paymentDate
+                  ).toLocaleDateString(
+                    "de-DE"
+                  )}
+                </strong>
+              </div>
 
-            {/* Plattform */}
-            <div
-              style={{
-                textAlign:
-                  "center",
-                marginBottom:
-                  "8px"
-              }}
-            >
-              Plattform:{" "}
-              {
-                payment.platform
-              }
-            </div>
+              <div>
+                {Number(
+                  payment.amount || 0
+                ).toFixed(2)}{" "}
+                €
+              </div>
 
-            {/* Verkäufer */}
-            <div
-              style={{
-                textAlign:
-                  "center",
-                marginBottom:
-                  "8px"
-              }}
-            >
-              Verkäufer:{" "}
-              {
-                payment.seller
-              }
-            </div>
+              <div>
+                {payment.firstInventoryNumber ||
+                  "-"}
+              </div>
 
-            {/* Startnummer */}
-            <div
-              style={{
-                textAlign:
-                  "center",
-                fontWeight:
-                  "600",
-                marginBottom:
-                  "8px"
-              }}
-            >
-              Startnummer:{" "}
-              {
-                payment.firstInventoryNumber
-              }
-            </div>
+              <div>
+                {cardCount}{" "}
+                {cardCount === 1
+                  ? "Karte"
+                  : "Karten"}
+              </div>
 
-            {/* Anzahl Karten */}
-            <div
-              style={{
-                textAlign:
-                  "center",
-                fontWeight:
-                  "600"
-              }}
-            >
-              Anzahl Karten:{" "}
-              {
-                payment.cardCount ||
-                1
-              }
+              <div>
+                {payment.seller || "-"}
+              </div>
             </div>
-          </div>
-        )
+          );
+        }
       )}
     </div>
   );

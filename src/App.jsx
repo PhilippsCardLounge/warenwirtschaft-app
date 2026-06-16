@@ -524,7 +524,7 @@ export default function App() {
           />
         </div>
       )}
-      {/* 📚 HISTORIE */}
+      {/* 📚 KAUFHISTORIE */}
       {activeTab ===
         "history" && (
         <div>
@@ -545,7 +545,7 @@ export default function App() {
             style={{
               display: "grid",
               gridTemplateColumns:
-                "200px 150px 150px 120px",
+                "160px 120px 140px 120px 180px",
               gap: "20px",
               fontWeight: "700",
               marginBottom: "8px",
@@ -556,6 +556,7 @@ export default function App() {
             <div>Betrag</div>
             <div>Startnr.</div>
             <div>Karten</div>
+            <div>Verkäufer</div>
           </div>
 
           {[...processedPurchases]
@@ -572,6 +573,9 @@ export default function App() {
                     purchase.id
                 );
 
+              const cardCount =
+                payment?.cardCount || 1;
+
               return (
                 <div
                   key={purchase.id}
@@ -583,7 +587,7 @@ export default function App() {
                     border: "1px solid #ddd",
                     display: "grid",
                     gridTemplateColumns:
-                      "200px 150px 150px 120px",
+                      "160px 120px 140px 120px 180px",
                     alignItems: "center",
                     gap: "20px"
                   }}
@@ -599,7 +603,10 @@ export default function App() {
                   </div>
 
                   <div>
-                    {purchase.price} €
+                    {Number(
+                      purchase.price || 0
+                    ).toFixed(2)}{" "}
+                    €
                   </div>
 
                   <div>
@@ -609,8 +616,14 @@ export default function App() {
                   </div>
 
                   <div>
-                    {payment?.cardCount || 1}{" "}
-                    Karten
+                    {cardCount}{" "}
+                    {cardCount === 1
+                      ? "Karte"
+                      : "Karten"}
+                  </div>
+
+                  <div>
+                    {purchase.seller || "-"}
                   </div>
                 </div>
               );
