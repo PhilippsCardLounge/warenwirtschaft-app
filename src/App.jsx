@@ -607,10 +607,7 @@ export default function App() {
                       : "-"}
                   </div>
 
-                  {payment
-                    ?.assignedCards
-                    ?.length >
-                    0 && (
+                  {payment && (
                     <div
                       style={{
                         marginTop:
@@ -621,24 +618,23 @@ export default function App() {
                           "1px solid #eee"
                       }}
                     >
-                      <strong>
-                        Erzeugte Karten:
-                      </strong>
+                      <div>
+                        <strong>
+                          Startnummer:
+                        </strong>{" "}
+                        {
+                          payment.firstInventoryNumber
+                        }
+                      </div>
 
-                      {payment.assignedCards.map(
-                        (
-                          card,
-                          index
-                        ) => (
-                          <div
-                            key={
-                              index
-                            }
-                          >
-                            {card}
-                          </div>
-                        )
-                      )}
+                      <div>
+                        <strong>
+                          Anzahl Karten:
+                        </strong>{" "}
+                        {
+                          payment.cardCount || 1
+                        }
+                      </div>
                     </div>
                   )}
                 </div>
