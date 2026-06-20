@@ -15,6 +15,19 @@ export default function InventoryList({
   const [saleInputs, setSaleInputs] =
     useState({});
 
+  const [
+    adjustmentItemId,
+    setAdjustmentItemId
+  ] = useState(null);
+
+  const [
+    adjustmentData,
+    setAdjustmentData
+  ] = useState({
+    amount: "",
+    reason: "Versand"
+  });
+
   function startEdit(item) {
     setEditingId(item.id);
 
@@ -28,7 +41,6 @@ export default function InventoryList({
   }
 
   function handleSave() {
-    // 🔥 DUPLIKAT-SCHUTZ
     const alreadyExists = items.some(
       (item) =>
         item.id !== editingId &&
@@ -81,10 +93,8 @@ export default function InventoryList({
             textAlign: "center"
           }}
         >
-          {/* EDIT MODE */}
           {editingId === item.id ? (
             <>
-              {/* 🔥 Inventar-Nummer */}
               <div
                 style={{
                   marginBottom: "12px"
@@ -121,7 +131,6 @@ export default function InventoryList({
                 />
               </div>
 
-              {/* 🔥 Name */}
               <div
                 style={{
                   marginBottom: "12px"
@@ -157,7 +166,6 @@ export default function InventoryList({
                 />
               </div>
 
-              {/* 🔥 Einkaufspreis */}
               <div
                 style={{
                   marginBottom: "12px"
@@ -196,7 +204,6 @@ export default function InventoryList({
                 />
               </div>
 
-              {/* 🔥 Zustand */}
               <div
                 style={{
                   marginBottom: "12px"
@@ -239,7 +246,6 @@ export default function InventoryList({
                 </select>
               </div>
 
-              {/* 🔥 Sprache */}
               <div
                 style={{
                   marginBottom: "12px"
@@ -283,7 +289,6 @@ export default function InventoryList({
                 </select>
               </div>
 
-              {/* 🔥 Herkunft */}
               <div
                 style={{
                   marginBottom: "16px"
@@ -321,7 +326,6 @@ export default function InventoryList({
                 />
               </div>
 
-              {/* BUTTONS */}
               <div
                 style={{
                   display: "flex",
@@ -372,7 +376,6 @@ export default function InventoryList({
             </>
           ) : (
             <>
-              {/* 🔢 Nummer + Name */}
               <div
                 style={{
                   fontSize: "22px",
@@ -391,7 +394,6 @@ export default function InventoryList({
                 {item.name}
               </div>
 
-              {/* 🔥 Infos */}
               <div
                 style={{
                   color: "#4b5563",
@@ -411,7 +413,6 @@ export default function InventoryList({
                   "-"}
               </div>
 
-              {/* 🔥 Herkunft */}
               <div
                 style={{
                   marginBottom: "8px",
@@ -423,25 +424,192 @@ export default function InventoryList({
                   "Altbestand"}
               </div>
 
-              {/* 💰 Einkaufspreis */}
               <div
                 style={{
                   marginBottom: "14px",
-                  fontWeight: "600"
+                  lineHeight: "1.8"
                 }}
               >
-                Einkaufspreis:{" "}
-                {item.purchasePrice !==
-                  null &&
-                item.purchasePrice !==
-                  undefined
-                  ? `${item.purchasePrice.toFixed(
-                      2
-                    )} €`
-                  : "—"}
+                <div>
+                  <strong>
+                    Kaufpreis:
+                  </strong>{" "}
+                  {Number(
+                    item.purchasePrice || 0
+                  ).toFixed(2)}{" "}
+                  €
+                </div>
+
+                <div>
+                  <strong>
+                    Anpassungen:
+                  </strong>{" "}
+                  {(item.costAdjustments || [])
+                    .reduce(
+                      (
+                        sum,
+                        adjustment
+                      ) => {
+                        if (
+                          adjustment.type ===
+                          "refund"
+                        ) {
+                          return (
+                            sum -
+                            Number(
+                              adjustment.amount ||
+                                0
+                            )
+                          );
+                        }
+
+                        return (
+                          sum +
+                          Number(
+                            adjustment.amount ||
+                              0
+                          )
+                        );
+                      },
+                      0
+                    )
+                    .toFixed(2)}{" "}
+                  €
+                </div>
+
+                {(item.costAdjustments || [])
+                  .length > 0 && (
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      marginLeft: "12px",
+                      fontSize: "14px",
+                      color: "#4b5563"
+                    }}
+                  >
+                    {item.costAdjustments.map(
+                      (adjustment, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "8px",
+                            alignItems: "center"
+                          }}
+                        >
+                          <span>
+                            {adjustment.date
+                              ? new Date(
+                                  adjustment.date
+                                ).toLocaleDateString(
+                                  "de-DE"
+                                )
+                              : "-"}
+                          </span>
+
+                          <span>
+                            {adjustment.type ===
+                            "refund"
+                              ? "-"
+                              : "+"}
+                            {Number(
+                              adjustment.amount
+                            ).toFixed(2)}{" "}
+                            € — {adjustment.reason}
+                          </span>
+
+                          <button
+                            onClick={() => {
+                              const confirmed =
+                                window.confirm(
+                                  "Diese Anpassung wirklich löschen?"
+                                );
+
+                              if (!confirmed) {
+                                return;
+                              }
+
+                              const updatedAdjustments =
+                                (
+                                  item.costAdjustments ||
+                                  []
+                                ).filter(
+                                  (_, adjustmentIndex) =>
+                                    adjustmentIndex !==
+                                    index
+                                );
+
+                              onEdit(item.id, {
+                                ...item,
+                                costAdjustments:
+                                  updatedAdjustments
+                              });
+                            }}
+                            style={{
+                              background: "#dc2626",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "6px",
+                              padding: "2px 6px",
+                              cursor: "pointer",
+                              fontSize: "12px"
+                            }}
+                          >
+                            Löschen
+                          </button>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+
+                <div
+                  style={{
+                    fontWeight:
+                      "700"
+                  }}
+                >
+                  Gesamt-EK:{" "}
+                  {(
+                    Number(
+                      item.purchasePrice || 0
+                    ) +
+                    (item.costAdjustments ||
+                      []
+                    ).reduce(
+                      (
+                        sum,
+                        adjustment
+                      ) => {
+                        if (
+                          adjustment.type ===
+                          "refund"
+                        ) {
+                          return (
+                            sum -
+                            Number(
+                              adjustment.amount ||
+                                0
+                            )
+                          );
+                        }
+
+                        return (
+                          sum +
+                          Number(
+                            adjustment.amount ||
+                              0
+                          )
+                        );
+                      },
+                      0
+                    )
+                  ).toFixed(2)}{" "}
+                  €
+                </div>
               </div>
 
-              {/* 🔥 Verkauf */}
               <div
                 style={{
                   display: "flex",
@@ -487,7 +655,6 @@ export default function InventoryList({
                         item.id
                       ];
 
-                    // 🔥 Kein leerer Verkauf
                     if (
                       salePrice ===
                         undefined ||
@@ -504,7 +671,6 @@ export default function InventoryList({
                       return;
                     }
 
-                    // 🔥 Warnung nur bei 0 €
                     if (
                       salePrice === 0
                     ) {
@@ -524,10 +690,8 @@ export default function InventoryList({
                       item,
                       {
                         salePrice,
-
                         platform:
                           "Cardmarket",
-
                         feePercent: 5
                       }
                     );
@@ -548,7 +712,6 @@ export default function InventoryList({
                 </button>
               </div>
 
-              {/* Aktionen */}
               <div
                 style={{
                   display: "flex",
@@ -578,6 +741,30 @@ export default function InventoryList({
 
                 <button
                   onClick={() =>
+                    setAdjustmentItemId(
+                      adjustmentItemId ===
+                        item.id
+                        ? null
+                        : item.id
+                    )
+                  }
+                  style={{
+                    background:
+                      "#f59e0b",
+                    color: "white",
+                    border: "none",
+                    borderRadius:
+                      "8px",
+                    padding:
+                      "10px 16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Zusatzkosten
+                </button>
+
+                <button
+                  onClick={() =>
                     onDelete(item.id)
                   }
                   style={{
@@ -595,6 +782,188 @@ export default function InventoryList({
                   Löschen
                 </button>
               </div>
+
+              {adjustmentItemId ===
+                item.id && (
+                <div
+                  style={{
+                    marginTop:
+                      "14px",
+                    padding:
+                      "14px",
+                    border:
+                      "1px solid #f59e0b",
+                    borderRadius:
+                      "10px",
+                    background:
+                      "#fffbeb"
+                  }}
+                >
+                  <h4
+                    style={{
+                      marginTop: 0
+                    }}
+                  >
+                    Zusatzkosten /
+                    Gutschrift
+                  </h4>
+
+                  <input
+                    type="number"
+                    placeholder="Betrag"
+                    value={
+                      adjustmentData.amount
+                    }
+                    onChange={(e) =>
+                      setAdjustmentData({
+                        ...adjustmentData,
+                        amount:
+                          e.target.value
+                      })
+                    }
+                    style={{
+                      width:
+                        "120px",
+                      padding:
+                        "8px",
+                      marginRight:
+                        "10px"
+                    }}
+                  />
+
+                  <select
+                    value={
+                      adjustmentData.reason
+                    }
+                    onChange={(e) =>
+                      setAdjustmentData({
+                        ...adjustmentData,
+                        reason:
+                          e.target.value
+                      })
+                    }
+                    style={{
+                      padding:
+                        "8px",
+                      marginRight:
+                        "10px"
+                    }}
+                  >
+                    <optgroup label="Kosten">
+                      <option value="Versand">
+                        Versand
+                      </option>
+                      <option value="Versicherter Versand">
+                        Versicherter
+                        Versand
+                      </option>
+                      <option value="Zoll">
+                        Zoll
+                      </option>
+                      <option value="Gebühren">
+                        Gebühren
+                      </option>
+                      <option value="Sonstiges">
+                        Sonstiges
+                      </option>
+                    </optgroup>
+
+                    <optgroup label="Gutschriften">
+                      <option value="Erstattung">
+                        Erstattung
+                      </option>
+                      <option value="Rabatt">
+                        Rabatt
+                      </option>
+                      <option value="Preisnachlass">
+                        Preisnachlass
+                      </option>
+                    </optgroup>
+                  </select>
+
+                  <button
+                    onClick={() => {
+                      const amount = Number(
+                        adjustmentData.amount
+                      );
+
+                      if (
+                        !amount ||
+                        amount <= 0
+                      ) {
+                        alert(
+                          "Bitte einen gültigen Betrag eingeben."
+                        );
+
+                        return;
+                      }
+
+                      const refundReasons = [
+                        "Erstattung",
+                        "Rabatt",
+                        "Preisnachlass"
+                      ];
+
+                      const adjustment = {
+                        amount,
+                        reason:
+                          adjustmentData.reason,
+
+                        type:
+                          refundReasons.includes(
+                            adjustmentData.reason
+                          )
+                            ? "refund"
+                            : "cost",
+
+                        date:
+                          new Date().toISOString()
+                      };
+
+                      onEdit(item.id, {
+                        ...item,
+
+                        costAdjustments: [
+                          ...(item.costAdjustments ||
+                            []),
+                          adjustment
+                        ]
+                      });
+
+                      setAdjustmentData({
+                        amount: "",
+                        reason: "Versand"
+                      });
+
+                      setAdjustmentItemId(null);
+                    }}
+                    style={{
+                      background: "#16a34a",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "8px 16px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Speichern
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setAdjustmentItemId(
+                        null
+                      )
+                    }
+                    style={{
+                      marginLeft:
+                        "10px"
+                    }}
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
