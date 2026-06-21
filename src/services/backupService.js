@@ -1,4 +1,5 @@
 import { db } from "./firebase";
+
 import {
   collection,
   getDocs,
@@ -13,7 +14,9 @@ const COLLECTIONS = [
   "sales",
   "openPurchases",
   "settings",
-  "importedPurchases"
+  "importedPurchases",
+  "payments",
+  "assignments"
 ];
 
 // 📦 EXPORT
@@ -21,12 +24,16 @@ export async function exportBackup() {
   const backup = {};
 
   for (const col of COLLECTIONS) {
-    const snapshot = await getDocs(collection(db, col));
+    const snapshot = await getDocs(
+      collection(db, col)
+    );
 
-    backup[col] = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    backup[col] = snapshot.docs.map(
+      (docItem) => ({
+        id: docItem.id,
+        ...docItem.data()
+      })
+    );
   }
 
   return backup;
@@ -34,10 +41,14 @@ export async function exportBackup() {
 
 // 🧨 COLLECTION LEEREN
 async function clearCollection(colName) {
-  const snapshot = await getDocs(collection(db, colName));
+  const snapshot = await getDocs(
+    collection(db, colName)
+  );
 
   for (const docSnap of snapshot.docs) {
-    await deleteDoc(doc(db, colName, docSnap.id));
+    await deleteDoc(
+      doc(db, colName, docSnap.id)
+    );
   }
 }
 
@@ -56,9 +67,15 @@ export async function importBackup(data) {
       const { id, ...rest } = item;
 
       if (id) {
-        await setDoc(doc(db, col, id), rest);
+        await setDoc(
+          doc(db, col, id),
+          rest
+        );
       } else {
-        await addDoc(collection(db, col), rest);
+        await addDoc(
+          collection(db, col),
+          rest
+        );
       }
     }
   }
