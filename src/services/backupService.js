@@ -5,8 +5,7 @@ import {
   getDocs,
   addDoc,
   doc,
-  setDoc,
-  deleteDoc
+  setDoc
 } from "firebase/firestore";
 
 const COLLECTIONS = [
@@ -39,27 +38,9 @@ export async function exportBackup() {
   return backup;
 }
 
-// 🧨 COLLECTION LEEREN
-async function clearCollection(colName) {
-  const snapshot = await getDocs(
-    collection(db, colName)
-  );
-
-  for (const docSnap of snapshot.docs) {
-    await deleteDoc(
-      doc(db, colName, docSnap.id)
-    );
-  }
-}
-
-// ♻️ RESTORE
+// ♻️ SICHERER RESTORE
+// Löscht NICHT vorher, sondern stellt Dokumente mit gleicher ID wieder her.
 export async function importBackup(data) {
-  // 1️⃣ alles löschen
-  for (const col of COLLECTIONS) {
-    await clearCollection(col);
-  }
-
-  // 2️⃣ neu schreiben
   for (const col of COLLECTIONS) {
     if (!data[col]) continue;
 
