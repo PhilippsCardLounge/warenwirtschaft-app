@@ -145,6 +145,14 @@ export default function CSVRowForm({
 
       purchaseDate: entry.date,
       purchaseSeller: entry.seller,
+      sourcePurchaseId:
+        entry.id,
+      sourcePlatform:
+        entry.sourcePlatform ||
+        "Whatnot",
+      sourceDataVersion:
+        entry.sourceDataVersion ||
+        1,
 
       cardCount: 1,
 
@@ -229,6 +237,14 @@ export default function CSVRowForm({
         purchaseDate: entry.date,
         purchaseSeller:
           entry.seller,
+        sourcePurchaseId:
+          entry.id,
+        sourcePlatform:
+          entry.sourcePlatform ||
+          "Whatnot",
+        sourceDataVersion:
+          entry.sourceDataVersion ||
+          1,
 
         cardCount: count,
 

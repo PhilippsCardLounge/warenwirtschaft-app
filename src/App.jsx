@@ -111,20 +111,46 @@ export default function App() {
       await getImportedPurchases();
 
     for (const entry of data) {
-      const key = `${entry.seller}_${entry.date}_${entry.price}`;
+      const legacyKey =
+        `${entry.seller}_${entry.date}_${entry.price}`;
+
+      const stableKey =
+        entry.sourceRecordId
+          ? `Whatnot_${entry.sourceRecordId}`
+          : null;
 
       const alreadyImported =
-        importedKeys.includes(key);
+        importedKeys.includes(
+          legacyKey
+        ) ||
+        (stableKey &&
+          importedKeys.includes(
+            stableKey
+          ));
 
       if (!alreadyImported) {
         await addPurchase({
           seller: entry.seller,
           date: entry.date,
-          price: entry.price
+          price: entry.price,
+          title: entry.title,
+          sourcePlatform:
+            entry.sourcePlatform,
+          sourceDataVersion:
+            entry.sourceDataVersion,
+          sourceRecordId:
+            entry.sourceRecordId,
+          sourceData:
+            entry.sourceData,
+          sourceAmounts:
+            entry.sourceAmounts,
+          priceDerivation:
+            entry.priceDerivation
         });
 
         await addImportedPurchase(
-          key
+          stableKey ||
+            legacyKey
         );
       } else {
         console.log(
@@ -690,6 +716,14 @@ export default function App() {
                           {
                             sourcePurchaseId:
                               entry.id,
+
+                            sourcePlatform:
+                              entry.sourcePlatform ||
+                              "Whatnot",
+
+                            sourceDataVersion:
+                              entry.sourceDataVersion ||
+                              1,
 
                             paymentDate:
                               entry.date,

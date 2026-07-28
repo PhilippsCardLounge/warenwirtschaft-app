@@ -27,6 +27,12 @@ export async function addItem(item) {
     language: item.language || "DE",
     purchaseDate: item.purchaseDate || "",
     purchaseSeller: item.purchaseSeller || "",
+    sourcePurchaseId:
+      item.sourcePurchaseId || null,
+    sourcePlatform:
+      item.sourcePlatform || null,
+    sourceDataVersion:
+      item.sourceDataVersion || null,
     inventoryNumber:
       item.inventoryNumber ?? null,
 

@@ -159,6 +159,18 @@ export function useInventory() {
         data.purchaseSeller ||
         "Altbestand",
 
+      sourcePurchaseId:
+        data.sourcePurchaseId ||
+        null,
+
+      sourcePlatform:
+        data.sourcePlatform ||
+        null,
+
+      sourceDataVersion:
+        data.sourceDataVersion ||
+        null,
+
       inventoryNumber,
 
       cardName: data.name,
